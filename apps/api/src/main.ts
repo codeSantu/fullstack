@@ -62,6 +62,8 @@ async function bootstrap() {
     });
 
     await app.listen(3001);
-    app.get(WINSTON_MODULE_NEST_PROVIDER).log(`Application is running on: ${await app.getUrl()}`);
+    const logger = app.get(WINSTON_MODULE_NEST_PROVIDER);
+    logger.log(`Application is running on: ${await app.getUrl()}`);
+    logger.log(`REDIS_URL: ${process.env.REDIS_URL ? '[FOUND]' : '[NOT FOUND]'}`);
 }
 bootstrap();
