@@ -16,9 +16,8 @@ import { MembersModule } from './infrastructure/modules/members.module';
 import { ChatModule } from './infrastructure/modules/chat.module';
 import { TasksModule } from './infrastructure/modules/tasks.module';
 import { UsersModule } from './infrastructure/modules/users.module';
-
 import { TenantInterceptor } from './infrastructure/interceptors/tenant.interceptor';
-import { LogService } from './application/services/log.service';
+import { AppController } from './infrastructure/controllers/app.controller';
 import { HealthController } from './infrastructure/controllers/health.controller';
 import { UploadsController } from './infrastructure/controllers/uploads.controller';
 
@@ -41,7 +40,7 @@ import { UploadsController } from './infrastructure/controllers/uploads.controll
             limit: 100,
         }]),
     ],
-    controllers: [UploadsController, HealthController],
+    controllers: [AppController, UploadsController, HealthController],
     providers: [
         {
             provide: APP_INTERCEPTOR,
