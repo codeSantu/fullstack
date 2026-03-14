@@ -224,12 +224,12 @@ export default function TasksPage() {
                     </div>
                 )}
                 
-                {displayedTasks?.map((task: any) => (
                     <div 
                         key={task.id} 
                         className={cn(
-                            "glass-card p-6 border transition-all duration-300",
-                            task.status === 'COMPLETED' ? "border-emerald-500/10 bg-emerald-500/[0.02]" : "border-white/5 hover:border-amber-500/20"
+                            "ultra-task-card p-6 border transition-all duration-300 rounded-2xl",
+                            task.status === 'COMPLETED' ? "border-emerald-500/20 bg-emerald-500/[0.03] ultra-glow-emerald" : "hover:border-amber-500/30",
+                            task.status === 'APPROVED' && "opacity-60 grayscale-[0.5]"
                         )}
                     >
                         <div className="flex flex-col sm:flex-row items-start gap-6">
