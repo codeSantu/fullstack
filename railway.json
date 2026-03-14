@@ -7,7 +7,7 @@
         "buildCommand": "npx turbo run build --filter=api"
       },
       "deploy": {
-        "startCommand": "npx turbo run start --filter=api",
+        "startCommand": "doppler run -- npx turbo run start --filter=api",
         "healthCheckPath": "/api/health",
         "restartPolicyType": "ON_FAILURE"
       }
