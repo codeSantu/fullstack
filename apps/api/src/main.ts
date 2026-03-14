@@ -44,7 +44,7 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
 
     app.enableCors({
-        origin: true, // Allow all origins in production, or configure via env if stricter control is needed
+        origin: true, // Allow all origins in production - Forced refresh
         credentials: true,
     });
 
