@@ -7,12 +7,12 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     private isConnected = false;
 
     constructor() {
-        this.client = createClient({
-            url: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
-        });
+        const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+        this.client = createClient({ url: redisUrl });
 
         this.client.on('error', (err) => {
-            console.warn('Redis Cache Error (Fallback to DB active):', err.message);
+            const sanitizedUrl = redisUrl.replace(/:[^:@]+@/, ':***@');
+            console.warn(`Redis Cache Error (${sanitizedUrl}):`, err.message);
             this.isConnected = false;
         });
 
