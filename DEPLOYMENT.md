@@ -97,6 +97,23 @@ Ensure the following secrets are set in your Doppler Project:
 1.  **`NEXT_PUBLIC_API_BASE_URL`**: The public URL of your Railway API (e.g., `https://api-production.up.railway.app/api`).
 2.  **`NEXT_PUBLIC_SOCKET_URL`**: The public URL of your Railway API (e.g., `https://api-production.up.railway.app`).
 
+### 🧹 Cleanup: Avoid "Double Deployment" Noise
+
+Because we are using a custom GitHub Action (System B) to handle Doppler and Monorepo builds, the native automated deployments from Vercel and Railway (System A) will often show as "Failed" or "Red" in the GitHub UI. 
+
+To clean up your dashboard and ensure only the **true** deployment status is shown:
+
+1.  **For Vercel**: 
+    - Go to **Project Settings > Git**.
+    - Under **GitHub Content**, find "Ignored Build Step".
+    - You can either disable the integration or use a script like `exit 0` to always "ignore" automatic pushes, as the GitHub Action handles it.
+2.  **For Railway**:
+    - Go to your service **Settings > General**.
+    - Under **Service Settings**, look for the GitHub Repository link.
+    - You can disconnect the native "Automatic Deployments" to prevent Railway from trying to build the repo itself.
+
+**Only the check named `Deployment / Build and Deploy` (the one with the rocket icon 🚀) needs to be Green!**
+
 ### Staging
 - **Branch**: `develop`
 - **Actions**: Builds using Doppler `stg` config and deploys to Railway (service: `api`) and Vercel.
