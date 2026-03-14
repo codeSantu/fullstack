@@ -24,8 +24,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Doppler CLI
-        run: |
-          (curl -Ls https://cli.doppler.com/install.sh || wget -qO- https://cli.doppler.com/install.sh) | sudo sh
+        uses: dopplerhq/cli-action@v1
 
       - name: Install dependencies
         run: npm ci
