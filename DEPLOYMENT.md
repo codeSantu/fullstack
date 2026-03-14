@@ -76,11 +76,19 @@ The project is configured with a GitHub Actions workflow (`.github/workflows/dep
 | `VERCEL_ORG_ID` | Vercel | Run `vercel project ls` or check dashboard |
 | `VERCEL_PROJECT_ID` | Vercel | Run `vercel project ls` or check dashboard |
 | `RAILWAY_STG_TOKEN` | Railway | Project Settings > Tokens > **Generate Project Token** |
-| `RAILWAY_STG_PROJECT_ID` | Railway | Project Settings > General > **Project ID** |
+| `RAILWAY_STG_SERVICE_ID` | Railway | Service Settings > **Service ID** |
 | `RAILWAY_PRD_TOKEN` | Railway | Project Settings > Tokens > **Generate Project Token** |
-| `RAILWAY_PRD_PROJECT_ID` | Railway | Project Settings > General > **Project ID** |
+| `RAILWAY_PRD_SERVICE_ID` | Railway | Service Settings > **Service ID** |
 | `DOPPLER_CONFIG_STG_TOKEN`| Doppler | Doppler Project > `stg` config > Service Tokens |
 | `DOPPLER_CONFIG_PRD_TOKEN`| Doppler | Doppler Project > `prd` config > Service Tokens |
+
+### ⚠️ Crucial Railway Monorepo Setup
+
+For each service on Railway (API and Web), you **must** configure the following in the Railway Dashboard:
+
+1.  **Service Settings > General > Root Directory**: Set this to `/apps/api` (for the API service).
+2.  **Service Settings > Build > Build Command**: Ensure it stays as `npx turbo run build` (or similar).
+3.  **Service Settings > Deploy > Start Command**: Set to `npm run start --workspace=api`.
 
 ### Staging
 - **Branch**: `develop`
