@@ -7,11 +7,21 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     private isConnected = false;
 
     constructor() {
-        const redisUrl = process.env.REDIS_URL || (process.env.REDIS_HOST ? `redis://${process.env.REDIS_HOST}` : 'redis://127.0.0.1:6379');
+        let redisUrl = process.env.REDIS_URL;
+
+        if (!redisUrl && process.env.REDIS_HOST) {
+            const user = process.env.REDIS_USER || '';
+            const password = process.env.REDIS_PASSWORD || '';
+            const port = process.env.REDIS_PORT || '6379';
+            const auth = password ? (user ? `${user}:${password}@` : `default:${password}@`) : '';
+            redisUrl = `redis://${auth}${process.env.REDIS_HOST}:${port}`;
+        }
+
+        redisUrl = redisUrl || 'redis://127.0.0.1:6379';
         this.client = createClient({ url: redisUrl });
 
         this.client.on('error', (err) => {
-            const sanitizedUrl = redisUrl.replace(/:[^:@]+@/, ':***@');
+            const sanitizedUrl = (redisUrl || '').replace(/:[^:@]+@/, ':***@');
             console.warn(`Redis Cache Error (${sanitizedUrl}):`, err.message);
             this.isConnected = false;
         });

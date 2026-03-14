@@ -45,15 +45,13 @@ async function bootstrap() {
 
     app.enableCors({
         origin: (origin, callback) => {
-            const allowedOrigins = [
-                'https://jmks.vercel.app',
-                'https://jmks-pingsantu-gmailcoms-projects.vercel.app',
-                'https://api-production.up.railway.app'
-            ];
-            if (!origin || allowedOrigins.includes(origin) || origin.includes('.railway.app')) {
+            if (!origin || 
+                origin.includes('.vercel.app') || 
+                origin.includes('.railway.app') || 
+                origin === 'https://jmks.vercel.app') {
                 callback(null, true);
             } else {
-                callback(new Error('Not allowed by CORS'));
+                callback(new Error(`CORS Error: Origin ${origin} not allowed`));
             }
         },
         credentials: true,
@@ -64,6 +62,14 @@ async function bootstrap() {
     await app.listen(3001);
     const logger = app.get(WINSTON_MODULE_NEST_PROVIDER);
     logger.log(`Application is running on: ${await app.getUrl()}`);
-    logger.log(`REDIS_URL: ${process.env.REDIS_URL ? '[FOUND]' : '[NOT FOUND]'}`);
+    
+    // Debug environment variables (obfuscated)
+    Object.keys(process.env).forEach(key => {
+        if (key.startsWith('REDIS_') || key.startsWith('NEXT_PUBLIC_')) {
+            const val = process.env[key];
+            const displayVal = val ? (val.length > 5 ? `${val.substring(0, 3)}...` : '[HIDDEN]') : '[EMPTY]';
+            logger.log(`Env Verify: ${key}=${displayVal}`);
+        }
+    });
 }
 bootstrap();

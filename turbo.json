@@ -8,6 +8,9 @@
         "AWS_SECRET_ACCESS_KEY",
         "AWS_S3_BUCKET",
         "REDIS_HOST",
+        "REDIS_PORT",
+        "REDIS_PASSWORD",
+        "REDIS_USER",
         "REDIS_URL",
         "NEXT_PUBLIC_API_BASE_URL",
         "NEXT_PUBLIC_SOCKET_URL"
