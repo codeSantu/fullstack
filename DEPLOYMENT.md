@@ -84,9 +84,14 @@ The project is configured with a GitHub Actions workflow (`.github/workflows/dep
 - **Branch**: `develop`
 - **Actions**: Builds using Doppler `stg` config and deploys to Railway (service: `api`) and Vercel.
 
-### Production
-- **Branch**: `main` or `master`
-- **Actions**: Builds using Doppler `prd` config and deploys to Railway (service: `api`) and Vercel.
+### ⚠️ Avoiding Double Deployments
+
+Since you have also connected your GitHub repository directly to Vercel and Railway via their dashboards, both systems will try to deploy simultaneously. To stick with the **GitHub Actions (System B)** approach:
+
+1.  **Vercel**: Go to Project Settings > Git > **Git Deployment** and set it to **Disabled** (or ensure it only triggers on branches NOT handled by GHA).
+2.  **Railway**: Go to Project Settings > **Automatic Deployments** and toggle it **OFF**.
+
+This ensures that only your authenticated GitHub Action workflow controls precisely when and how the code is deployed using your Doppler secrets.
 
 ## 🛠️ Local Development with Doppler
 
