@@ -22,10 +22,32 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
             }
         }
 
+        // Hard fallback for local development or if Railway internal host fails
         redisUrl = redisUrl || 'redis://127.0.0.1:6379';
-        this.client = createClient({ url: redisUrl });
+        
+        this.client = createClient({ 
+            url: redisUrl,
+            socket: {
+                connectTimeout: 5000,
+                reconnectStrategy: (retries) => {
+                    if (retries > 3) {
+                        // After 3 attempts, if we were trying a railway internal host, try localhost
+                        if (redisUrl?.includes('railway.internal')) {
+                            console.warn('Switching to localhost redis fallback...');
+                            return new Error('RECONNECT_LOCAL_FALLBACK');
+                        }
+                        return new Error('Retry limit reached');
+                    }
+                    return Math.min(retries * 100, 3000);
+                }
+            }
+        });
 
         this.client.on('error', (err) => {
+            if (err.message === 'RECONNECT_LOCAL_FALLBACK') {
+                this.reconnectToLocalFallback();
+                return;
+            }
             const sanitizedUrl = (redisUrl || '').replace(/:[^:@]+@/, ':***@');
             console.warn(`Redis Cache Error (${sanitizedUrl}):`, err.message);
             this.isConnected = false;
@@ -33,7 +55,29 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
         this.client.on('connect', () => {
             this.isConnected = true;
+            console.log('Redis connected successfully');
         });
+    }
+
+    private async reconnectToLocalFallback() {
+        console.log('Attempting Redis connection to localhost:6379');
+        try {
+            if (this.client) {
+                await this.client.disconnect().catch(() => {});
+            }
+            this.client = createClient({ url: 'redis://127.0.0.1:6379' });
+            this.client.on('error', (err) => {
+                console.warn('Redis Fallback Error:', err.message);
+                this.isConnected = false;
+            });
+            this.client.on('connect', () => {
+                this.isConnected = true;
+                console.log('Redis connected to local fallback');
+            });
+            await this.client.connect();
+        } catch (e) {
+            console.warn('Final Redis connection attempt failed.');
+        }
     }
 
     async onModuleInit() {
