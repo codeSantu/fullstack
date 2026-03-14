@@ -9,12 +9,17 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     constructor() {
         let redisUrl = process.env.REDIS_URL;
 
-        if (!redisUrl && process.env.REDIS_HOST) {
-            const user = process.env.REDIS_USER || '';
-            const password = process.env.REDIS_PASSWORD || '';
-            const port = process.env.REDIS_PORT || '6379';
-            const auth = password ? (user ? `${user}:${password}@` : `default:${password}@`) : '';
-            redisUrl = `redis://${auth}${process.env.REDIS_HOST}:${port}`;
+        if (!redisUrl) {
+            // Check for underscored variables first (Doppler/User) then Railway defaults
+            const host = process.env.REDIS_HOST || process.env.REDISHOST;
+            const port = process.env.REDIS_PORT || process.env.REDISPORT || '6379';
+            const password = process.env.REDIS_PASSWORD || process.env.REDISPASSWORD || '';
+            const user = process.env.REDIS_USER || process.env.REDISUSER || '';
+
+            if (host) {
+                const auth = password ? (user ? `${user}:${password}@` : `default:${password}@`) : '';
+                redisUrl = `redis://${auth}${host}:${port}`;
+            }
         }
 
         redisUrl = redisUrl || 'redis://127.0.0.1:6379';

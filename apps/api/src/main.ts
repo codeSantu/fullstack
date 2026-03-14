@@ -17,7 +17,7 @@ console.log(`DOPPLER_TOKEN Status: ${dopplerToken ? `FOUND (Prefix: ${dopplerTok
 
 const debugPrefixes = ['REDIS_', 'NEXT_PUBLIC_', 'TURSO_', 'JWT_', 'AWS_', 'DATABASE_'];
 Object.keys(process.env).forEach(key => {
-    if (debugPrefixes.some(p => key.startsWith(p))) {
+    if (debugPrefixes.some(p => key.startsWith(p)) || key.includes('DOPPLER') || key.includes('TOKEN')) {
         const val = process.env[key];
         const displayVal = val ? (val.length > 5 ? `${val.substring(0, 3)}...` : '[HIDDEN]') : '[EMPTY]';
         console.log(`Env Verify: ${key}=${displayVal}`);
