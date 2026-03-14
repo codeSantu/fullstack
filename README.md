@@ -1,4 +1,5 @@
 # Organizer Hub Enterprise Boilerplate 🚀
+<!-- Last Deployment Test: 2026-03-14T17:16:15+05:30 -->
 
 Welcome to the Organizer Hub V2! This repository defines a **Production-Ready, Monorepo Architecture** utilizing Domain-Driven Design (DDD) to govern Next.js frontend rendering, NestJS REST API orchestration, and AWS Infrastructure parameters.
 
