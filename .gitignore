@@ -51,3 +51,6 @@ cdk.out/
 # Temp
 tmp/
 *.tmp
+
+# Local Netlify folder
+.netlify
