@@ -10,6 +10,9 @@ import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
+    if (!process.env.DOPPLER_CRASH_SECRET) {
+        throw new Error('DOPPLER_CRASH_SECRET is missing! Backend crash test triggered.');
+    }
     // Inject Winston Logger Context
     const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: WinstonModule.createLogger(winstonConfig) });
 
