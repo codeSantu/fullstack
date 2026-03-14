@@ -51,6 +51,27 @@ To enable "Full Turbo" (zero-second builds for unchanged code) in GitHub Actions
     *   `TURBO_TEAM`: Your team/username.
 3.  **Check the Workflow**: The `.github/workflows/ci.yml` is already configured to use these secrets. Your builds will now be significantly faster by sharing cache hits across your team and CI.
 
-## 🔐 Environment Syncing
+## 🔐 Automated Secret Management (Doppler)
 
-We recommend using **Doppler** or **Infisical** to manage secrets across Vercel and Railway, but manual entry in their respective dashboards also works perfectly.
+We use **Doppler** to sync secrets across local, Vercel, and Railway environments. This ensures a single source of truth.
+
+1.  **Install Doppler CLI**: Follow the [official instructions](https://docs.doppler.com/docs/install-cli).
+2.  **Authenticate**: `doppler login`.
+3.  **Setup Project**: 
+    - Go to Doppler Dashboard and create a project named `organizer-hub`.
+    - Create three configs: `dev`, `stg`, and `prd`.
+4.  **Sync to Vercel**:
+    - Install the Doppler Vercel Integration in the Doppler dashboard.
+    - Map your `prd` config to the Vercel Project.
+5.  **Sync to Railway**:
+    - Use the Railway Doppler Integration or the CLI to inject secrets:
+    - `doppler secrets download --no-prefix --format env > .env` (for local)
+    - Railway also supports Doppler natively via integration.
+
+## 🚀 Local Development with Doppler
+
+Instead of managing a local `.env` file manually, run your project via Doppler:
+```bash
+doppler run -- npx turbo run dev
+```
+This will inject all secrets directly into the environment variables of your workspaces.

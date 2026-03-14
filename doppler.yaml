@@ -1,0 +1,7 @@
+setup:
+  project: organizer-hub
+  config: dev
+
+# Monorepo scoping (Optional but helpful)
+# This allows 'doppler run' to work seamlessly across workspaces
+# if you decide to use it for local development.
