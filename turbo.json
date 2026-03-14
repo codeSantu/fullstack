@@ -13,13 +13,14 @@
         "REDIS_USER",
         "REDIS_URL",
         "NEXT_PUBLIC_API_BASE_URL",
-        "NEXT_PUBLIC_SOCKET_URL"
+        "NEXT_PUBLIC_SOCKET_URL",
+        "DEBUG_MODE",
+        "NODE_ENV"
     ],
     "tasks": {
         "build": {
             "dependsOn": [
-                "^build",
-                "db:generate"
+                "^build"
             ],
             "outputs": [
                 "dist/**",

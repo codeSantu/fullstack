@@ -22,6 +22,9 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
                 ? exception.message
                 : 'Internal server error';
 
+        const isDebug = process.env.DEBUG_MODE === 'true';
+        const stack = exception instanceof Error ? exception.stack : 'No stack trace available';
+
         // CloudWatch ready standardized JSON format
         this.logger.error('Unhandled Exception Caught', {
             timestamp: new Date().toISOString(),
@@ -29,7 +32,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
             method: request.method,
             status: status,
             message: message,
-            stack: exception instanceof Error ? exception.stack : 'No stack trace available',
+            stack: stack,
         });
 
         response.status(status).json({
@@ -37,6 +40,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
             timestamp: new Date().toISOString(),
             path: request.url,
             message: message,
+            ...(isDebug ? { stack, debugInfo: (exception as any)?.response || null } : {}),
         });
     }
 }
