@@ -56,6 +56,6 @@ export class PrismaService extends PrismaClient {
     }
 
     constructor(@Optional() @Inject('PRISMA_OPTIONS') options?: any) {
-        super(options);
+        super(options || {});
     }
 }

@@ -44,8 +44,20 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
 
     app.enableCors({
-        origin: true, // Allow all origins in production - Forced refresh
+        origin: (origin, callback) => {
+            const allowedOrigins = [
+                'https://jmks.vercel.app',
+                'https://jmks-pingsantu-gmailcoms-projects.vercel.app'
+            ];
+            if (!origin || allowedOrigins.includes(origin) || origin.includes('.railway.app')) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
         credentials: true,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: 'Content-Type,Accept,Authorization,x-organization-id',
     });
 
     await app.listen(3001);
