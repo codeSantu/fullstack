@@ -55,7 +55,6 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_CONFIG_STG_TOKEN }}
         run: |
-          cd apps/web
           npx vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
           doppler run --config stg -- npx vercel build --token=$VERCEL_TOKEN
           npx vercel deploy --prebuilt --token=$VERCEL_TOKEN
@@ -83,7 +82,6 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_CONFIG_PRD_TOKEN }}
         run: |
-          cd apps/web
           npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
           doppler run --config prd -- npx vercel build --prod --token=$VERCEL_TOKEN
           npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
