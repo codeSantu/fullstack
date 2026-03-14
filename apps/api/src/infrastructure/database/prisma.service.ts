@@ -15,9 +15,10 @@ export class PrismaService extends PrismaClient {
             const adapter = new PrismaLibSql({ url, authToken });
             client = new PrismaService({ adapter });
         } else {
-            console.log('Using Database URL from Environment');
-            // If url/token are missing, we rely on the default DATABASE_URL env var
-            client = new PrismaService();
+            console.log('Using SQLite Local Database with Driver Adapter');
+            const localUrl = process.env.DATABASE_URL || 'file:./prisma/dev.db';
+            const adapter = new PrismaLibSql({ url: localUrl });
+            client = new PrismaService({ adapter });
         }
 
         const extended = client.$extends({
