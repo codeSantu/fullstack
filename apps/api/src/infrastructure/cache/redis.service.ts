@@ -18,7 +18,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
             // Proactive local detection: if we are local and host looks like railway internal, ignore it
             if (isLocal && host?.includes('railway.internal')) {
-                console.log('Local environment detected. Skipping Railway internal Redis host:', host);
                 host = undefined;
             }
 
@@ -28,10 +27,8 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
             }
         }
 
-        // Hard fallback for local development
         const finalUrl = redisUrl || 'redis://127.0.0.1:6379';
         const sanitizedUrl = finalUrl.replace(/:[^:@]+@/, ':***@');
-        
         console.log(`Initializing Redis client with: ${sanitizedUrl}`);
 
         this.client = createClient({ 
@@ -40,10 +37,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
                 connectTimeout: 5000,
                 reconnectStrategy: (retries) => {
                     if (retries > 2) {
-                        if (finalUrl.includes('railway.internal') || !this.isConnected) {
-                            return new Error('RECONNECT_LOCAL_FALLBACK');
-                        }
-                        return new Error('Retry limit reached');
+                        return new Error('RECONNECT_LOCAL_FALLBACK');
                     }
                     return Math.min(retries * 500, 2000);
                 }
@@ -52,12 +46,11 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
         this.client.on('error', (err) => {
             if (err.message === 'RECONNECT_LOCAL_FALLBACK') {
-                if (isLocal || finalUrl.includes('railway.internal')) {
-                    this.reconnectToLocalFallback();
-                }
+                this.reconnectToLocalFallback();
                 return;
             }
-            if (!this.isConnected) {
+            if (!this.isConnected && !this.client.isOpen) {
+                // Only log if we aren't even connected yet
                 console.warn(`Redis Connection Warning: ${err.message}`);
             }
         });
@@ -71,23 +64,37 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     private async reconnectToLocalFallback() {
         if (this.isConnected) return;
         
-        console.log('Attempting Redis connection to localhost fallback...');
-        try {
-            if (this.client) {
-                await this.client.disconnect().catch(() => {});
+        const fallbacks = ['redis://127.0.0.1:6379'];
+        // If we are in a Linux environment (like a container), try host.docker.internal
+        if (process.platform === 'linux') {
+            fallbacks.push('redis://host.docker.internal:6379');
+        }
+
+        for (const url of fallbacks) {
+            if (this.isConnected) break;
+            console.log(`Attempting Redis connection to fallback: ${url}`);
+            try {
+                if (this.client) {
+                    await this.client.disconnect().catch(() => {});
+                }
+                this.client = createClient({ 
+                    url,
+                    socket: { connectTimeout: 2000 }
+                });
+                this.client.on('error', () => { this.isConnected = false; });
+                this.client.on('connect', () => {
+                    this.isConnected = true;
+                    console.log(`Redis connected to fallback: ${url}`);
+                });
+                await this.client.connect();
+                if (this.isConnected) return;
+            } catch (e) {
+                // Try next fallback
             }
-            this.client = createClient({ url: 'redis://127.0.0.1:6379' });
-            this.client.on('error', (err) => {
-                if (!this.isConnected) console.warn('Redis Fallback Error:', err.message);
-                this.isConnected = false;
-            });
-            this.client.on('connect', () => {
-                this.isConnected = true;
-                console.log('Redis connected to local fallback');
-            });
-            await this.client.connect().catch(() => {});
-        } catch (e) {
-            // Silently fail after fallback
+        }
+        
+        if (!this.isConnected) {
+            console.warn('All Redis connection attempts failed. Running in degraded mode.');
         }
     }
 
