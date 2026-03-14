@@ -31,6 +31,16 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
         const initialUrl = redisUrl || 'redis://127.0.0.1:6379';
         
+        // Detailed Railway diagnostics
+        if (process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL) {
+            console.log('--- RAILWAY REDIS DIAGNOSTICS ---');
+            console.log('REDIS_URL present:', !!process.env.REDIS_URL);
+            console.log('REDIS_HOST:', process.env.REDIS_HOST);
+            console.log('REDISHOST:', process.env.REDISHOST);
+            console.log('Generated Initial URL:', initialUrl.replace(/:[^:@]+@/, ':***@'));
+            console.log('---------------------------------');
+        }
+
         // List of URLs to try in order
         const urlsToTry = [initialUrl];
         if (initialUrl !== 'redis://127.0.0.1:6379') urlsToTry.push('redis://127.0.0.1:6379');
