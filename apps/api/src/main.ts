@@ -11,13 +11,17 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // Debug environment variables immediately on load
 console.log('--- PRODUCTION ENVIRONMENT VERIFICATION ---');
+const debugPrefixes = ['REDIS_', 'NEXT_PUBLIC_', 'TURSO_', 'JWT_', 'AWS_', 'DATABASE_'];
 Object.keys(process.env).forEach(key => {
-    if (key.startsWith('REDIS_') || key.startsWith('NEXT_PUBLIC_')) {
+    if (debugPrefixes.some(p => key.startsWith(p))) {
         const val = process.env[key];
         const displayVal = val ? (val.length > 5 ? `${val.substring(0, 3)}...` : '[HIDDEN]') : '[EMPTY]';
         console.log(`Env Verify: ${key}=${displayVal}`);
     }
 });
+if (!process.env.DOPPLER_TOKEN) {
+    console.warn('CRITICAL: DOPPLER_TOKEN is not defined in Railway. Environment variables will not sync from Doppler.');
+}
 console.log('-------------------------------------------');
 
 async function bootstrap() {
