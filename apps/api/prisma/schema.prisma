@@ -1,0 +1,291 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Organization {
+  id          String        @id @default(uuid())
+  name        String
+  description String?       // Added for Puja Committee details
+  users       User[]
+  members     Member[]      // Added for Puja Committee members
+  festivals   Festival[]
+  volunteers  Volunteer[]
+  donations   Donation[]
+  announcements Announcement[]
+  galleryImages GalleryImage[]
+  chatGroups  ChatGroup[]
+  tasks       Task[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model User {
+  id             String        @id @default(uuid())
+  email          String        @unique
+  name           String?
+  password       String
+  role           String        @default("USER")
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  memberProfile  Member?       @relation(fields: [memberId], references: [id])
+  memberId       String?       @unique
+  festivals      Festival[]
+  events         Event[]
+  volunteers     Volunteer[]
+  donations      Donation[]
+  announcements  Announcement[]
+  galleryImages  GalleryImage[]
+  sentMessages   ChatMessage[] @relation("SentMessages")
+  chatGroups     ChatGroup[]   @relation("GroupMembers")
+  assignedTasks  Task[]        @relation("AssignedTasks")
+  createdTasks   Task[]        @relation("CreatedTasks")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Member {
+  id             String        @id @default(uuid())
+  name           String
+  designation    String?
+  phone          String?
+  address        String?
+  bio            String?
+  avatarUrl      String?
+  
+  userId         String?       @unique
+  user           User?         
+
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+
+  fixedDonationAmount Int    @default(2000)
+  fixedDonationStatus String @default("PENDING") // PENDING, SUCCESS
+  lastNoticeSentAt    DateTime?
+  noticeSentCount     Int    @default(0)
+  
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId])
+}
+
+model ChatGroup {
+  id             String        @id @default(uuid())
+  name           String?       // Null for p2p chats
+  isGroup        Boolean       @default(false)
+  
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+
+  members        User[]        @relation("GroupMembers")
+  messages       ChatMessage[]
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId])
+}
+
+model ChatMessage {
+  id          String    @id @default(uuid())
+  content     String
+  
+  senderId    String
+  sender      User      @relation("SentMessages", fields: [senderId], references: [id])
+
+  groupId     String
+  group       ChatGroup @relation(fields: [groupId], references: [id])
+
+  createdAt   DateTime  @default(now())
+
+  @@index([groupId])
+  @@index([senderId])
+}
+
+model Task {
+  id             String        @id @default(uuid())
+  title          String
+  description    String?
+  adminRemarks   String?
+  assigneeRemarks String?
+  status         String        @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, APPROVED
+  priority       String        @default("MEDIUM")  // LOW, MEDIUM, HIGH, URGENT
+  dueDate        DateTime?
+
+  creatorId      String
+  creator        User          @relation("CreatedTasks", fields: [creatorId], references: [id])
+
+  assigneeId     String?
+  assignee       User?         @relation("AssignedTasks", fields: [assigneeId], references: [id])
+
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId])
+  @@index([assigneeId])
+  @@index([creatorId])
+}
+
+model Festival {
+  id             String        @id @default(uuid())
+  title          String
+  subtitle       String?
+  description    String?
+  bannerUrl      String?
+  startDate      DateTime
+  endDate        DateTime
+  location       String?
+
+  scheduleJson   String? // JSON for schedule days
+  committeeJson  String? // JSON for committee sections
+  footerJson     String? // JSON for footer info
+  creatorId      String
+  creator        User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  events         Event[]
+  volunteers     Volunteer[]
+  donations      Donation[]
+  announcements  Announcement[]
+  galleryImages  GalleryImage[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([creatorId])
+  @@index([organizationId])
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  date        DateTime
+  location    String?
+  
+  creatorId   String
+  creator     User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  festivalId  String?
+  festival    Festival? @relation(fields: [festivalId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([creatorId])
+}
+
+model Volunteer {
+  id             String        @id @default(uuid())
+  name           String
+  role           String?
+  contact        String?
+
+  creatorId      String
+  creator        User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  festivalId     String
+  festival       Festival      @relation(fields: [festivalId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([festivalId])
+  @@index([creatorId])
+  @@index([organizationId])
+}
+
+model Donation {
+  id             String        @id @default(uuid())
+  amount         Int
+  donorName      String?
+  method         String?
+  note           String?
+
+  creatorId      String
+  creator        User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  festivalId     String
+  festival       Festival      @relation(fields: [festivalId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([festivalId])
+  @@index([creatorId])
+  @@index([organizationId])
+}
+
+model Announcement {
+  id             String        @id @default(uuid())
+  title          String
+  content        String
+  isPinned       Boolean       @default(false)
+  displayFrom    DateTime?
+  displayTo      DateTime?
+
+  creatorId      String
+  creator        User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  festivalId     String
+  festival       Festival      @relation(fields: [festivalId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([festivalId])
+  @@index([creatorId])
+  @@index([organizationId])
+  @@index([isPinned])
+}
+
+model GalleryImage {
+  id             String        @id @default(uuid())
+  url            String
+  caption        String?
+  order          Int           @default(0)
+
+  creatorId      String
+  creator        User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  festivalId     String
+  festival       Festival      @relation(fields: [festivalId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([festivalId])
+  @@index([creatorId])
+  @@index([organizationId])
+  @@index([order])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String
+  festivalId  String
+  userId      String?
+  details     String?
+  timestamp   DateTime @default(now())
+
+  @@index([festivalId])
+}
