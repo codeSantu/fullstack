@@ -20,12 +20,7 @@ Object.keys(process.env).forEach(key => {
     if (debugPrefixes.some(p => key.startsWith(p))) {
         const val = process.env[key];
         const displayVal = val ? (val.length > 5 ? `${val.substring(0, 3)}...` : '[HIDDEN]') : '[EMPTY]';
-        console.log(`Env Match: ${key}=${displayVal}`);
-    } else {
-        // Log non-matching key names briefly to see what IS there
-        if (!key.startsWith('npm_') && !key.startsWith('NODE_') && key !== 'PATH') {
-            console.log(`Other Env Key Found: ${key}`);
-        }
+        console.log(`Env Verify: ${key}=${displayVal}`);
     }
 });
 console.log('-------------------------------------------');
