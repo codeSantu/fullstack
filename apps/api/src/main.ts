@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
@@ -12,6 +11,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // Debug environment variables immediately on load
 console.log('--- PRODUCTION ENVIRONMENT VERIFICATION ---');
+console.log(`Working Directory: ${process.cwd()}`);
 const debugPrefixes = ['REDIS_', 'NEXT_PUBLIC_', 'TURSO_', 'JWT_', 'AWS_', 'DATABASE_'];
 Object.keys(process.env).forEach(key => {
     if (debugPrefixes.some(p => key.startsWith(p)) || key.includes('DOPPLER') || key.includes('TOKEN')) {
