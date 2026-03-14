@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
-import { 
-    CheckCircle2, Circle, Clock, Plus, 
-    Shield, MessageCircle 
+import {
+    CheckCircle2, Circle, Clock, Plus,
+    Shield, MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +18,7 @@ export default function TasksPage() {
     const queryClient = useQueryClient();
     const isAdmin = user?.role === 'ADMIN';
     const [mounted, setMounted] = useState(false);
-    
+
     // Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
@@ -51,7 +51,7 @@ export default function TasksPage() {
     const { data: tasks, isLoading } = useQuery({
         queryKey: ['tasks', user?.id],
         queryFn: async () => {
-            const endpoint = isAdmin 
+            const endpoint = isAdmin
                 ? `${API}/tasks/organization/${user?.organizationId}`
                 : `${API}/tasks/assignee/${user?.id}`;
             const res = await fetch(endpoint, {
@@ -103,7 +103,7 @@ export default function TasksPage() {
                 creatorId: user?.id,
                 dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined
             };
-            
+
             const res = await fetch(`${API}/tasks`, {
                 method: 'POST',
                 headers: {
@@ -146,9 +146,9 @@ export default function TasksPage() {
         const currentValue = type === 'admin' ? task.adminRemarks : task.assigneeRemarks;
         const remarks = window.prompt(title, currentValue || '');
         if (remarks !== null) {
-            updateMutation.mutate({ 
-                id: task.id, 
-                data: type === 'admin' ? { adminRemarks: remarks } : { assigneeRemarks: remarks } 
+            updateMutation.mutate({
+                id: task.id,
+                data: type === 'admin' ? { adminRemarks: remarks } : { assigneeRemarks: remarks }
             });
         }
     };
@@ -189,8 +189,8 @@ export default function TasksPage() {
                             onClick={() => setActiveTab('active')}
                             className={cn(
                                 "flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all",
-                                activeTab === 'active' 
-                                    ? "bg-white/10 text-white shadow-sm" 
+                                activeTab === 'active'
+                                    ? "bg-white/10 text-white shadow-sm"
                                     : "text-neutral-500 hover:text-white hover:bg-white/5"
                             )}
                         >
@@ -200,8 +200,8 @@ export default function TasksPage() {
                             onClick={() => setActiveTab('history')}
                             className={cn(
                                 "flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all",
-                                activeTab === 'history' 
-                                    ? "bg-white/10 text-white shadow-sm" 
+                                activeTab === 'history'
+                                    ? "bg-white/10 text-white shadow-sm"
                                     : "text-neutral-500 hover:text-white hover:bg-white/5"
                             )}
                         >
@@ -217,15 +217,18 @@ export default function TasksPage() {
             </header>
 
             <div className="grid gap-6">
+                {/* Empty State */}
                 {displayedTasks?.length === 0 && (
                     <div className="glass-card p-12 text-center text-neutral-500">
                         <Clock className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                        কোন কাজ খুঁজে পাওয়া যায়নি
+                        কোন কাজ খুঁজে পাওয়া যায়নি
                     </div>
                 )}
-                
-                    <div 
-                        key={task.id} 
+
+                {/* Corrected Mapping Function */}
+                {displayedTasks?.map((task: any) => (
+                    <div
+                        key={task.id}
                         className={cn(
                             "ultra-task-card p-6 border transition-all duration-300 rounded-2xl",
                             task.status === 'COMPLETED' ? "border-emerald-500/20 bg-emerald-500/[0.03] ultra-glow-emerald" : "hover:border-amber-500/30",
@@ -233,13 +236,14 @@ export default function TasksPage() {
                         )}
                     >
                         <div className="flex flex-col sm:flex-row items-start gap-6">
-                            <button 
+                            {/* Status Toggle Button */}
+                            <button
                                 onClick={() => task.status !== 'APPROVED' && handleToggleComplete(task)}
                                 disabled={task.status === 'APPROVED'}
                                 className={cn(
                                     "mt-1 transition-all active:scale-90",
                                     task.status === 'APPROVED' ? "text-emerald-500 cursor-default" :
-                                    task.status === 'COMPLETED' ? "text-amber-500" : "text-neutral-600 hover:text-amber-500"
+                                        task.status === 'COMPLETED' ? "text-amber-500" : "text-neutral-600 hover:text-amber-500"
                                 )}
                             >
                                 {task.status === 'APPROVED' ? (
@@ -251,6 +255,7 @@ export default function TasksPage() {
                                 )}
                             </button>
 
+                            {/* Content Area */}
                             <div className="flex-1 space-y-3">
                                 <div className="flex items-center gap-3">
                                     <h3 className={cn(
@@ -259,24 +264,15 @@ export default function TasksPage() {
                                     )}>
                                         {task.title}
                                     </h3>
-                                    {task.priority === 'URGENT' ? (
-                                        <Badge className="bg-red-500/20 text-red-500 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.5)] font-bold text-[10px] uppercase tracking-tighter">
-                                            {task.priority}
-                                        </Badge>
-                                    ) : (
-                                        <Badge variant={task.priority === 'HIGH' ? 'destructive' : 'secondary'} className="bg-white/5 text-[10px] uppercase tracking-tighter">
-                                            {task.priority || 'NORMAL'}
-                                        </Badge>
-                                    )}
-                                    
+                                    {/* Priority Badge */}
+                                    <Badge variant={task.priority === 'URGENT' ? 'destructive' : 'secondary'} className="text-[10px] uppercase">
+                                        {task.priority || 'NORMAL'}
+                                    </Badge>
+
+                                    {/* Status Badges */}
                                     {task.status === 'COMPLETED' && (
-                                        <Badge variant="outline" className="border-amber-500/50 text-amber-500 text-[10px] uppercase tracking-tighter">
-                                            Pending Approval (অপেক্ষমান)
-                                        </Badge>
-                                    )}
-                                    {task.status === 'APPROVED' && (
-                                        <Badge variant="outline" className="border-emerald-500/50 text-emerald-500 text-[10px] uppercase tracking-tighter">
-                                            Approved (অনুমোদিত)
+                                        <Badge variant="outline" className="border-amber-500/50 text-amber-500 text-[10px] uppercase">
+                                            Pending Approval
                                         </Badge>
                                     )}
                                 </div>
@@ -285,82 +281,27 @@ export default function TasksPage() {
                                     {task.description || 'কোন বর্ণনা নেই'}
                                 </p>
 
-                                {task.adminRemarks && (
-                                    <div className="flex items-start gap-2 p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/10 max-w-2xl">
-                                        <MessageCircle className="w-4 h-4 text-indigo-400 mt-1 shrink-0" />
-                                        <div>
-                                            <div className="text-[10px] uppercase tracking-widest text-indigo-400 font-black mb-1">অ্যাডমিন রিমার্ক (Admin Remarks)</div>
-                                            <p className="text-xs text-indigo-100/80 italic">"{task.adminRemarks}"</p>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {task.assigneeRemarks && (
-                                    <div className="flex items-start gap-2 p-3 rounded-xl bg-fuchsia-500/5 border border-fuchsia-500/10 max-w-2xl mt-2">
-                                        <MessageCircle className="w-4 h-4 text-fuchsia-400 mt-1 shrink-0" />
-                                        <div>
-                                            <div className="text-[10px] uppercase tracking-widest text-fuchsia-400 font-black mb-1">অ্যাসাইনী রিমার্ক (Assignee Remarks)</div>
-                                            <p className="text-xs text-fuchsia-100/80 italic">"{task.assigneeRemarks}"</p>
-                                        </div>
-                                    </div>
-                                )}
-
+                                {/* Metadata Section */}
                                 <div className="flex flex-wrap items-center gap-4 pt-2">
                                     <div className="flex items-center gap-1.5 text-xs text-neutral-500">
-                                        <Clock className="w-3.5 h-3.5" /> 
-                                        অবधि: {task.dueDate ? new Date(task.dueDate).toLocaleDateString('bn-IN') : 'নির্ধারিত নয়'}
+                                        <Clock className="w-3.5 h-3.5" /> অবধি: {task.dueDate ? new Date(task.dueDate).toLocaleDateString('bn-IN') : 'নির্ধারিত নয়'}
                                     </div>
                                     <div className="flex items-center gap-1.5 text-xs text-neutral-500">
-                                        <Shield className="w-3.5 h-3.5" /> 
-                                        অ্যাসাইনী: {task.assignee?.name || 'অজ্ঞাত'}
+                                        <Shield className="w-3.5 h-3.5" /> অ্যাসাইনী: {task.assignee?.name || 'অজ্ঞাত'}
                                     </div>
                                 </div>
                             </div>
 
+                            {/* Action Buttons Column */}
                             <div className="flex sm:flex-col gap-2 w-full sm:w-auto mt-4 sm:mt-0">
-                                {isAdmin && task.status !== 'APPROVED' && (
-                                    <Button 
-                                        variant="outline" 
-                                        size="sm" 
-                                        className="flex-1 border-white/10 hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/20"
-                                        onClick={() => handleUpdateRemarks(task, 'admin')}
-                                    >
-                                        অ্যাডমিন রিমার্ক
-                                    </Button>
-                                )}
-                                {(!isAdmin || task.assigneeId === user?.id) && task.status !== 'APPROVED' && (
-                                    <Button 
-                                        variant="outline" 
-                                        size="sm" 
-                                        className="flex-1 border-white/10 hover:bg-fuchsia-500/10 hover:text-fuchsia-400 hover:border-fuchsia-500/20"
-                                        onClick={() => handleUpdateRemarks(task, 'assignee')}
-                                    >
-                                        অ্যাসাইনী রিমার্ক
-                                    </Button>
-                                )}
-                                
-                                {task.status !== 'APPROVED' && (
-                                    <Button 
-                                        variant="ghost" 
-                                        size="sm"
-                                        className={cn(
-                                            "flex-1",
-                                            task.status === 'COMPLETED' ? "text-amber-400" : "text-emerald-400"
-                                        )}
-                                        onClick={() => handleToggleComplete(task)}
-                                    >
-                                        {task.status === 'COMPLETED' ? 'পুনরায় খুলুন' : 'সম্পন্ন করুন'}
-                                    </Button>
-                                )}
-
                                 {isAdmin && task.status === 'COMPLETED' && (
-                                    <Button 
-                                        variant="default" 
+                                    <Button
+                                        variant="default"
                                         size="sm"
-                                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
+                                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white"
                                         onClick={() => handleApproveTask(task)}
                                     >
-                                        অনুমোদন করুন (Approve)
+                                        অনুমোদন করুন
                                     </Button>
                                 )}
                             </div>
@@ -371,15 +312,15 @@ export default function TasksPage() {
 
             {/* Premium Add Task Modal */}
             {isAddModalOpen && (
-                <div 
+                <div
                     className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto"
                     onClick={() => setIsAddModalOpen(false)}
                 >
-                    <div 
+                    <div
                         className="relative w-full max-w-xl glass-card p-8 animate-fade-in-up border-white/10 my-auto"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <button 
+                        <button
                             onClick={() => setIsAddModalOpen(false)}
                             className="absolute right-6 top-6 text-neutral-500 hover:text-white transition-colors"
                         >
@@ -442,7 +383,7 @@ export default function TasksPage() {
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <div>
                                 <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1">নির্ধারিত সময় (Due Date)</label>
                                 <input
