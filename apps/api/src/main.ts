@@ -43,13 +43,18 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api/docs', app, document);
 
+    const allowedOrigins = [
+        'https://jmks.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:3001',
+    ];
+
     app.enableCors({
         origin: (origin, callback) => {
             if (!origin || 
-                origin.includes('.vercel.app') || 
-                origin.includes('.railway.app') || 
-                origin.includes('localhost') ||
-                origin === 'https://jmks.vercel.app') {
+                allowedOrigins.includes(origin) || 
+                origin.endsWith('.vercel.app') || 
+                origin.endsWith('.railway.app')) {
                 callback(null, true);
             } else {
                 callback(new Error(`CORS Error: Origin ${origin} not allowed`));
@@ -60,6 +65,7 @@ async function bootstrap() {
         allowedHeaders: 'Content-Type,Accept,Authorization,x-organization-id',
     });
 
-    await app.listen(3001);
+    const port = process.env.PORT || 3001;
+    await app.listen(port, '0.0.0.0');
 }
 bootstrap();
