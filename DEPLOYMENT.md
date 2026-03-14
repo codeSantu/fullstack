@@ -84,11 +84,11 @@ The project is configured with a GitHub Actions workflow (`.github/workflows/dep
 
 ### ⚠️ Crucial Railway Monorepo Setup
 
-For each service on Railway (API and Web), you **must** configure the following in the Railway Dashboard:
+To ensure Railway can build your API with its dependencies (like `@ddd/shared`), configure the following in the Railway Dashboard:
 
-1.  **Service Settings > General > Root Directory**: Set this to `/apps/api` (for the API service).
-2.  **Service Settings > Build > Build Command**: Ensure it stays as `npx turbo run build` (or similar).
-3.  **Service Settings > Deploy > Start Command**: Set to `npm run start --workspace=api`.
+1.  **Service Settings > General > Root Directory**: Set this to `/` (The repo root).
+2.  **Service Settings > Build > Build Command**: Set to `npx turbo run build --filter=api`
+3.  **Service Settings > Deploy > Start Command**: Set to `npm run start --workspace=api`
 
 ### Staging
 - **Branch**: `develop`
