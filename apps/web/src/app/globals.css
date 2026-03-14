@@ -1828,10 +1828,10 @@ body {
    display: flex;
    flex-direction: column;
    gap: 8px;
-     overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
+   overflow-y: auto;
+   scrollbar-width: none;
+   -ms-overflow-style: none;
+ }
 
  .nav-item {
    display: flex;
@@ -1989,104 +1989,116 @@ body {
    background: var(--neon-blue);
  }
 
-  /* Table Styling */
-  .premium-table-container {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    -webkit-overflow-scrolling: touch;
-    position: relative;
-  }
+ /* Table Styling */
+ .premium-table-container {
+   width: 100%;
+   overflow-x: auto;
+   padding-bottom: 10px;
+   -webkit-overflow-scrolling: touch;
+   position: relative;
+ }
 
-  /* Scroll indicators for mobile tables */
-  @media (max-width: 768px) {
-    .premium-table-container::after {
-      content: '';
-      position: absolute;
-      right: 0;
-      top: 0;
-      bottom: 10px;
-      width: 20px;
-      background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.4));
-      pointer-events: none;
-      opacity: 0.6;
-    }
-  }
+ /* Scroll indicators for mobile tables */
+ @media (max-width: 768px) {
+   .premium-table-container::after {
+     content: '';
+     position: absolute;
+     right: 0;
+     top: 0;
+     bottom: 10px;
+     width: 20px;
+     background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.4));
+     pointer-events: none;
+     opacity: 0.6;
+   }
+ }
 
-  .premium-table {
-    width: 100%;
-    min-width: 700px; /* Ensure content doesn't squash too much */
-    border-collapse: separate;
-    border-spacing: 0 8px;
-  }
+ .premium-table {
+   width: 100%;
+   min-width: 700px;
+   /* Ensure content doesn't squash too much */
+   border-collapse: separate;
+   border-spacing: 0 8px;
+ }
 
-  /* Compact Mobile UI for Tables */
-  @media (max-width: 640px) {
-    .dashboard-main {
-      padding: 80px 1rem 1rem 1rem !important;
-    }
-    .dashboard-header {
-      margin-bottom: 1.5rem !important;
-    }
-    .dashboard-title {
-      font-size: 1.5rem !important;
-    }
+ /* Compact Mobile UI for Tables */
+ @media (max-width: 640px) {
+   .dashboard-main {
+     padding: 80px 1rem 1rem 1rem !important;
+   }
 
-    .premium-table.stack-on-mobile {
-      min-width: 100% !important;
-      display: block;
-      border-spacing: 0;
-    }
-    .premium-table.stack-on-mobile thead {
-      display: none;
-    }
-    .premium-table.stack-on-mobile tbody,
-    .premium-table.stack-on-mobile tr {
-      display: block;
-      width: 100%;
-    }
-    .premium-table.stack-on-mobile tr {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 16px;
-      position: relative;
-    }
-    .premium-table.stack-on-mobile td {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0 !important;
-      border: none !important;
-      background: transparent !important;
-      text-align: left !important;
-    }
-    .premium-table.stack-on-mobile td::before {
-      content: attr(data-label);
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: rgba(255, 255, 255, 0.4);
-      margin-right: 16px;
-    }
-    /* Hide label for the first column (checkbox) if it's empty or specific */
-    .premium-table.stack-on-mobile td:first-child::before {
-      content: "নির্বাচন"; /* Select */
-      margin-right: auto;
-    }
-    /* Action column handling */
-    .premium-table.stack-on-mobile td:last-child {
-      justify-content: flex-end;
-      padding-top: 12px !important;
-      border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-      margin-top: 8px;
-    }
-    .premium-table.stack-on-mobile td:last-child::before {
-      content: none;
-    }
-  }
+   .dashboard-header {
+     margin-bottom: 1.5rem !important;
+   }
+
+   .dashboard-title {
+     font-size: 1.5rem !important;
+   }
+
+   .premium-table.stack-on-mobile {
+     min-width: 100% !important;
+     display: block;
+     border-spacing: 0;
+   }
+
+   .premium-table.stack-on-mobile thead {
+     display: none;
+   }
+
+   .premium-table.stack-on-mobile tbody,
+   .premium-table.stack-on-mobile tr {
+     display: block;
+     width: 100%;
+   }
+
+   .premium-table.stack-on-mobile tr {
+     background: rgba(255, 255, 255, 0.03);
+     border: 1px solid rgba(255, 255, 255, 0.05);
+     border-radius: 20px;
+     padding: 16px;
+     margin-bottom: 16px;
+     position: relative;
+   }
+
+   .premium-table.stack-on-mobile td {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 10px 0 !important;
+     border: none !important;
+     background: transparent !important;
+     text-align: left !important;
+   }
+
+   .premium-table.stack-on-mobile td::before {
+     content: attr(data-label);
+     font-size: 10px;
+     font-weight: 800;
+     text-transform: uppercase;
+     letter-spacing: 1px;
+     color: rgba(255, 255, 255, 0.4);
+     margin-right: 16px;
+   }
+
+   /* Hide label for the first column (checkbox) if it's empty or specific */
+   .premium-table.stack-on-mobile td:first-child::before {
+     content: "নির্বাচন";
+     /* Select */
+     margin-right: auto;
+   }
+
+   /* Action column handling */
+   .premium-table.stack-on-mobile td:last-child {
+     justify-content: flex-end;
+     padding-top: 12px !important;
+     border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+     margin-top: 8px;
+   }
+
+   .premium-table.stack-on-mobile td:last-child::before {
+     content: none;
+   }
+ }
 
  .premium-table th {
    padding: 16px;
@@ -2163,128 +2175,132 @@ body {
      height: 45px;
    }
  }
-.sidebar-nav::-webkit-scrollbar {
-  display: none;
-}
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 20px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-.animate-slide-up {
-  animation: slideUp 0.3s ease-out forwards;
-}
-
-/* Puja Popover Mobile Refinements */
-@media (max-width: 640px) {
-  .popover-card {
-    padding: 24px !important;
-    border-radius: 20px !important;
-  }
-
-  .command-header {
-    flex-direction: column !important;
-    text-align: center !important;
-    gap: 12px !important;
-    margin-bottom: 20px !important;
-  }
-
-  .command-logo {
-    width: 60px !important;
-    height: 60px !important;
-    font-size: 1.8rem !important;
-  }
-
-  .command-title {
-    font-size: 1.25rem !important;
-    line-height: 1.4 !important;
-  }
-
-  .command-subtitle {
-    font-size: 0.75rem !important;
-    letter-spacing: 1px !important;
-  }
-
-  .command-grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-  }
-
-  .command-grid > * {
-    grid-column: span 1 !important;
-  }
-
-  .stat-card {
-    padding: 16px !important;
-  }
-
-  .stat-label {
-    font-size: 0.85rem !important;
-  }
-
-  .demo-card-desc {
-    font-size: 0.8rem !important;
-  }
-}
-
-/* Ultra Tasks Styles */
-.ultra-task-card {
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.ultra-task-card:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(245, 158, 11, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(245, 158, 11, 0.1);
-}
-
-.ultra-task-card::before {
-    content: " \;
- position: absolute;
- top: 0;
- left: 0;
- width: 2px;
- height: 0;
- background: linear-gradient(to bottom, transparent, #f59e0b, transparent);
- transition: height 0.4s ease;
-}
-
-.ultra-task-card:hover::before {
- height: 100%;
-}
-
-.ultra-glow-amber {
- box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
-}
-
-.ultra-glow-emerald {
- box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
-}
-
-.animate-fade-in-up {
- animation: fade-in-up 0.5s ease-out forwards;
-}
-
-@keyframes fade-in-up {
- from {
- opacity: 0;
- transform: translateY(20px);
+ .sidebar-nav::-webkit-scrollbar {
+   display: none;
  }
- to {
- opacity: 1;
- transform: translateY(0);
+
+ @keyframes slideUp {
+   from {
+     opacity: 0;
+     transform: translate(-50%, 20px);
+   }
+
+   to {
+     opacity: 1;
+     transform: translate(-50%, 0);
+   }
  }
-}
+
+ .animate-slide-up {
+   animation: slideUp 0.3s ease-out forwards;
+ }
+
+ /* Puja Popover Mobile Refinements */
+ @media (max-width: 640px) {
+   .popover-card {
+     padding: 24px !important;
+     border-radius: 20px !important;
+   }
+
+   .command-header {
+     flex-direction: column !important;
+     text-align: center !important;
+     gap: 12px !important;
+     margin-bottom: 20px !important;
+   }
+
+   .command-logo {
+     width: 60px !important;
+     height: 60px !important;
+     font-size: 1.8rem !important;
+   }
+
+   .command-title {
+     font-size: 1.25rem !important;
+     line-height: 1.4 !important;
+   }
+
+   .command-subtitle {
+     font-size: 0.75rem !important;
+     letter-spacing: 1px !important;
+   }
+
+   .command-grid {
+     grid-template-columns: 1fr !important;
+     gap: 16px !important;
+   }
+
+   .command-grid>* {
+     grid-column: span 1 !important;
+   }
+
+   .stat-card {
+     padding: 16px !important;
+   }
+
+   .stat-label {
+     font-size: 0.85rem !important;
+   }
+
+   .demo-card-desc {
+     font-size: 0.8rem !important;
+   }
+ }
+
+ /* Ultra Tasks Styles */
+ .ultra-task-card {
+   background: rgba(255, 255, 255, 0.02);
+   backdrop-filter: blur(12px);
+   border: 1px solid rgba(255, 255, 255, 0.05);
+   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+   position: relative;
+   overflow: hidden;
+ }
+
+ .ultra-task-card:hover {
+   background: rgba(255, 255, 255, 0.04);
+   border-color: rgba(245, 158, 11, 0.3);
+   transform: translateY(-2px);
+   box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(245, 158, 11, 0.1);
+ }
+
+ .ultra-task-card::before {
+   content: "";
+   /* Added the closing quote here */
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 2px;
+   height: 0;
+   background: linear-gradient(to bottom, transparent, #f59e0b, transparent);
+   transition: height 0.4s ease;
+ }
+
+ .ultra-task-card:hover::before {
+   height: 100%;
+ }
+
+ .ultra-glow-amber {
+   box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+ }
+
+ .ultra-glow-emerald {
+   box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+ }
+
+ .animate-fade-in-up {
+   animation: fade-in-up 0.5s ease-out forwards;
+ }
+
+ @keyframes fade-in-up {
+   from {
+     opacity: 0;
+     transform: translateY(20px);
+   }
+
+   to {
+     opacity: 1;
+     transform: translateY(0);
+   }
+ }
