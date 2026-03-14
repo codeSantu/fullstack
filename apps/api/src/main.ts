@@ -9,6 +9,17 @@ import { WinstonModule, WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
+// Debug environment variables immediately on load
+console.log('--- PRODUCTION ENVIRONMENT VERIFICATION ---');
+Object.keys(process.env).forEach(key => {
+    if (key.startsWith('REDIS_') || key.startsWith('NEXT_PUBLIC_')) {
+        const val = process.env[key];
+        const displayVal = val ? (val.length > 5 ? `${val.substring(0, 3)}...` : '[HIDDEN]') : '[EMPTY]';
+        console.log(`Env Verify: ${key}=${displayVal}`);
+    }
+});
+console.log('-------------------------------------------');
+
 async function bootstrap() {
     // Inject Winston Logger Context
     const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: WinstonModule.createLogger(winstonConfig) });
@@ -48,9 +59,11 @@ async function bootstrap() {
             if (!origin || 
                 origin.includes('.vercel.app') || 
                 origin.includes('.railway.app') || 
+                origin.includes('localhost') ||
                 origin === 'https://jmks.vercel.app') {
                 callback(null, true);
             } else {
+                console.warn(`CORS REJECTED: ${origin}`);
                 callback(new Error(`CORS Error: Origin ${origin} not allowed`));
             }
         },
@@ -60,16 +73,5 @@ async function bootstrap() {
     });
 
     await app.listen(3001);
-    const logger = app.get(WINSTON_MODULE_NEST_PROVIDER);
-    logger.log(`Application is running on: ${await app.getUrl()}`);
-    
-    // Debug environment variables (obfuscated)
-    Object.keys(process.env).forEach(key => {
-        if (key.startsWith('REDIS_') || key.startsWith('NEXT_PUBLIC_')) {
-            const val = process.env[key];
-            const displayVal = val ? (val.length > 5 ? `${val.substring(0, 3)}...` : '[HIDDEN]') : '[EMPTY]';
-            logger.log(`Env Verify: ${key}=${displayVal}`);
-        }
-    });
 }
 bootstrap();
