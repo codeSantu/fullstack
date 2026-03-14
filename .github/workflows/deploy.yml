@@ -64,8 +64,8 @@ jobs:
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_CONFIG_PRD_TOKEN }}
         run: |
-          doppler secrets set NEXT_PUBLIC_API_BASE_URL=https://api-production.up.railway.app/api --yes
-          doppler secrets set NEXT_PUBLIC_SOCKET_URL=https://api-production.up.railway.app --yes
+          doppler secrets set NEXT_PUBLIC_API_BASE_URL=https://api-production.up.railway.app/api
+          doppler secrets set NEXT_PUBLIC_SOCKET_URL=https://api-production.up.railway.app
 
       - name: Build Production
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
