@@ -11,10 +11,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // Debug environment variables immediately on load
 console.log('--- PRODUCTION ENVIRONMENT VERIFICATION ---');
-console.log(`Total Environment Variables Detected: ${Object.keys(process.env).length}`);
-const dopplerToken = process.env.DOPPLER_TOKEN || '';
-console.log(`DOPPLER_TOKEN Status: ${dopplerToken ? `FOUND (Prefix: ${dopplerToken.substring(0, 6)}...)` : 'NOT FOUND'}`);
-
 const debugPrefixes = ['REDIS_', 'NEXT_PUBLIC_', 'TURSO_', 'JWT_', 'AWS_', 'DATABASE_'];
 Object.keys(process.env).forEach(key => {
     if (debugPrefixes.some(p => key.startsWith(p)) || key.includes('DOPPLER') || key.includes('TOKEN')) {
