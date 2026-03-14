@@ -43,9 +43,11 @@ jobs:
         if: github.ref == 'refs/heads/develop'
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_STG_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_STG_PROJECT_ID }}
         run: |
           npm install -g @railway/cli
-          cd apps/api && railway up --service api --detach --ci
+          railway up --service api --detach --ci
+        working-directory: apps/api
 
       - name: Deploy Web to Vercel (Staging)
         if: github.ref == 'refs/heads/develop'
@@ -70,9 +72,11 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_PRD_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PRD_PROJECT_ID }}
         run: |
           npm install -g @railway/cli
-          cd apps/api && railway up --service api --detach --ci
+          railway up --service api --detach --ci
+        working-directory: apps/api
 
       - name: Deploy Web to Vercel (Production)
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
