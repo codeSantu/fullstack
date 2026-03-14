@@ -6,7 +6,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     private client: Redis | null = null;
     private isConnected = false;
 
-    constructor() {}
+    constructor() { }
 
     async onModuleInit() {
         let redisUrl = process.env.REDIS_URL;
@@ -14,7 +14,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         if (!redisUrl) {
             let host = process.env.REDIS_HOST || process.env.REDISHOST;
             const port = parseInt(process.env.REDIS_PORT || process.env.REDISPORT || '6379', 10);
-            const password = process.env.REDIS_PASSWORD || process.env.REDIS_PASSWORD || '';
+            const password = process.env.REDIS_PASSWORD || process.env.REDISPASSWORD || '';
             const user = process.env.REDIS_USER || process.env.REDISUSER || '';
 
             // Skip railway internal if local (windows/mac)
@@ -30,7 +30,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         }
 
         const initialUrl = redisUrl || 'redis://127.0.0.1:6379';
-        
+
         // Detailed Railway diagnostics
         if (process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL) {
             console.log('--- RAILWAY REDIS DIAGNOSTICS ---');
@@ -52,10 +52,10 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
         for (const url of uniqueUrls) {
             if (this.isConnected) break;
-            
+
             const sanitizedUrl = url.replace(/:[^:@]+@/, ':***@');
             console.log(`Attempting Redis connection (ioredis): ${sanitizedUrl}`);
-            
+
             try {
                 const tempClient = new Redis(url, {
                     connectTimeout: 2000,
@@ -67,7 +67,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
                     tempClient.once('ready', () => resolve());
                     tempClient.once('error', (err) => reject(err));
                 });
-                
+
                 this.client = tempClient;
                 this.isConnected = true;
                 console.log(`Redis connected successfully to ${sanitizedUrl}`);
