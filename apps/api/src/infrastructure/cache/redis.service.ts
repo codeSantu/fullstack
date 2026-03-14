@@ -1,10 +1,9 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { createClient, RedisClientType } from 'redis';
+import Redis from 'ioredis';
 
 @Injectable()
-@Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
-    private client: RedisClientType | null = null;
+    private client: Redis | null = null;
     private isConnected = false;
 
     constructor() {}
@@ -14,12 +13,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
         if (!redisUrl) {
             let host = process.env.REDIS_HOST || process.env.REDISHOST;
-            const port = process.env.REDIS_PORT || process.env.REDISPORT || '6379';
+            const port = parseInt(process.env.REDIS_PORT || process.env.REDISPORT || '6379', 10);
             const password = process.env.REDIS_PASSWORD || process.env.REDIS_PASSWORD || '';
             const user = process.env.REDIS_USER || process.env.REDISUSER || '';
 
             // Skip railway internal if local (windows/mac)
-            if ((process.platform === 'win32' || process.platform === 'darwin') && host?.includes('railway.internal')) {
+            const isLocalDev = process.platform === 'win32' || process.platform === 'darwin';
+            if (isLocalDev && host?.includes('railway.internal')) {
                 host = undefined;
             }
 
@@ -44,32 +44,35 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
             if (this.isConnected) break;
             
             const sanitizedUrl = url.replace(/:[^:@]+@/, ':***@');
-            console.log(`Attempting Redis connection: ${sanitizedUrl}`);
+            console.log(`Attempting Redis connection (ioredis): ${sanitizedUrl}`);
             
             try {
-                const tempClient = createClient({ 
-                    url,
-                    socket: { connectTimeout: 2000 }
-                });
-                
-                tempClient.on('error', (err) => {
-                    if (this.isConnected) {
-                        console.warn('Redis Runtime Error:', err.message);
-                    }
+                const tempClient = new Redis(url, {
+                    connectTimeout: 2000,
+                    maxRetriesPerRequest: 1,
+                    retryStrategy: () => null // Don't auto-retry here, we handle the sequence
                 });
 
-                await tempClient.connect();
+                await new Promise<void>((resolve, reject) => {
+                    tempClient.once('ready', () => resolve());
+                    tempClient.once('error', (err) => reject(err));
+                });
                 
-                this.client = tempClient as any;
+                this.client = tempClient;
                 this.isConnected = true;
                 console.log(`Redis connected successfully to ${sanitizedUrl}`);
                 break;
             } catch (err) {
                 console.log(`Failed to connect to ${sanitizedUrl}: ${err.message}`);
+                // Ensure client is closed
             }
         }
 
-        if (!this.isConnected) {
+        if (this.isConnected && this.client) {
+            this.client.on('error', (err) => {
+                console.warn('Redis Runtime Error:', err.message);
+            });
+        } else {
             console.warn('All Redis connection attempts failed. Running in degraded cache mode.');
         }
     }
@@ -87,6 +90,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     async get(key: string): Promise<string | null> {
         if (!this.isConnected || !this.client) return null;
         try {
+            // ioredis get returns Promise<string | null>
             return await this.client.get(key);
         } catch {
             return null;
@@ -96,7 +100,8 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     async set(key: string, value: string, expirationSeconds: number = 300): Promise<void> {
         if (!this.isConnected || !this.client) return;
         try {
-            await this.client.setEx(key, expirationSeconds, value);
+            // ioredis uses setex(key, seconds, value) or set(key, value, 'EX', seconds)
+            await this.client.setex(key, expirationSeconds, value);
         } catch {
             // Ignore
         }
