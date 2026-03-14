@@ -11,17 +11,23 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // Debug environment variables immediately on load
 console.log('--- PRODUCTION ENVIRONMENT VERIFICATION ---');
+console.log(`Total Environment Variables Detected: ${Object.keys(process.env).length}`);
+const dopplerToken = process.env.DOPPLER_TOKEN || '';
+console.log(`DOPPLER_TOKEN Status: ${dopplerToken ? `FOUND (Prefix: ${dopplerToken.substring(0, 6)}...)` : 'NOT FOUND'}`);
+
 const debugPrefixes = ['REDIS_', 'NEXT_PUBLIC_', 'TURSO_', 'JWT_', 'AWS_', 'DATABASE_'];
 Object.keys(process.env).forEach(key => {
     if (debugPrefixes.some(p => key.startsWith(p))) {
         const val = process.env[key];
         const displayVal = val ? (val.length > 5 ? `${val.substring(0, 3)}...` : '[HIDDEN]') : '[EMPTY]';
-        console.log(`Env Verify: ${key}=${displayVal}`);
+        console.log(`Env Match: ${key}=${displayVal}`);
+    } else {
+        // Log non-matching key names briefly to see what IS there
+        if (!key.startsWith('npm_') && !key.startsWith('NODE_') && key !== 'PATH') {
+            console.log(`Other Env Key Found: ${key}`);
+        }
     }
 });
-if (!process.env.DOPPLER_TOKEN) {
-    console.warn('CRITICAL: DOPPLER_TOKEN is not defined in Railway. Environment variables will not sync from Doppler.');
-}
 console.log('-------------------------------------------');
 
 async function bootstrap() {
