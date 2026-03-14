@@ -1,16 +1,12 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
-  "services": {
-    "api": {
-      "build": {
-        "builder": "NIXPACKS",
-        "buildCommand": "npx turbo run build --filter=api"
-      },
-      "deploy": {
-        "startCommand": "npx turbo run start --filter=api",
-        "healthCheckPath": "/api/health",
-        "restartPolicyType": "ON_FAILURE"
-      }
-    }
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npx turbo run build --filter=api"
+  },
+  "deploy": {
+    "startCommand": "npx turbo run start --filter=api",
+    "healthcheckPath": "/api/health",
+    "restartPolicyType": "ON_FAILURE"
   }
 }

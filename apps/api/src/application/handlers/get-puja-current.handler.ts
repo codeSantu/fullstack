@@ -1,9 +1,11 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { Logger } from '@nestjs/common';
 import { GetPujaCurrentQuery } from '../queries/get-puja-current.query';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 
 @QueryHandler(GetPujaCurrentQuery)
 export class GetPujaCurrentHandler implements IQueryHandler<GetPujaCurrentQuery> {
+    private readonly logger = new Logger(GetPujaCurrentHandler.name);
     constructor(private readonly prisma: PrismaService) { }
 
     async execute(query: GetPujaCurrentQuery): Promise<any> {
@@ -61,21 +63,21 @@ export class GetPujaCurrentHandler implements IQueryHandler<GetPujaCurrentQuery>
         try {
             scheduleDays = festival.scheduleJson ? JSON.parse(festival.scheduleJson) : [];
         } catch (e) {
-            console.error('Failed to parse scheduleJson', e);
+            this.logger.error('Failed to parse scheduleJson', e);
         }
 
         let committeeSections = [];
         try {
             committeeSections = festival.committeeJson ? JSON.parse(festival.committeeJson) : [];
         } catch (e) {
-            console.error('Failed to parse committeeJson', e);
+            this.logger.error('Failed to parse committeeJson', e);
         }
 
         let footer = { locations: [] };
         try {
             footer = festival.footerJson ? JSON.parse(festival.footerJson) : { locations: [] };
         } catch (e) {
-            console.error('Failed to parse footerJson', e);
+            this.logger.error('Failed to parse footerJson', e);
         }
 
         return {

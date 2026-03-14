@@ -1,8 +1,9 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import Redis from 'ioredis';
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
+    private readonly logger = new Logger(RedisService.name);
     private client: Redis | null = null;
     private isConnected = false;
 
@@ -31,15 +32,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
         const initialUrl = redisUrl || 'redis://127.0.0.1:6379';
 
-        // Detailed Railway diagnostics
-        if (process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL) {
-            console.log('--- RAILWAY REDIS DIAGNOSTICS ---');
-            console.log('REDIS_URL present:', !!process.env.REDIS_URL);
-            console.log('REDIS_HOST:', process.env.REDIS_HOST);
-            console.log('REDISHOST:', process.env.REDISHOST);
-            console.log('Generated Initial URL:', initialUrl.replace(/:[^:@]+@/, ':***@'));
-            console.log('---------------------------------');
-        }
 
         // List of URLs to try in order
         const urlsToTry = [initialUrl];
@@ -54,7 +46,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
             if (this.isConnected) break;
 
             const sanitizedUrl = url.replace(/:[^:@]+@/, ':***@');
-            console.log(`Attempting Redis connection (ioredis): ${sanitizedUrl}`);
+            this.logger.log(`Attempting Redis connection: ${sanitizedUrl}`);
 
             try {
                 const tempClient = new Redis(url, {
@@ -70,20 +62,20 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
                 this.client = tempClient;
                 this.isConnected = true;
-                console.log(`Redis connected successfully to ${sanitizedUrl}`);
+                this.logger.log(`Redis connected successfully to ${sanitizedUrl}`);
                 break;
             } catch (err) {
-                console.log(`Failed to connect to ${sanitizedUrl}: ${err.message}`);
+                this.logger.warn(`Failed to connect to ${sanitizedUrl}: ${err.message}`);
                 // Ensure client is closed
             }
         }
 
         if (this.isConnected && this.client) {
             this.client.on('error', (err) => {
-                console.warn('Redis Runtime Error:', err.message);
+                this.logger.warn(`Redis Runtime Error: ${err.message}`);
             });
         } else {
-            console.warn('All Redis connection attempts failed. Running in degraded cache mode.');
+            this.logger.warn('All Redis connection attempts failed. Running in degraded cache mode.');
         }
     }
 

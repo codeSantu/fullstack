@@ -9,19 +9,6 @@ import { WinstonModule, WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-// Debug environment variables immediately on load
-console.log('--- PRODUCTION ENVIRONMENT VERIFICATION ---');
-console.log(`Working Directory: ${process.cwd()}`);
-const debugPrefixes = ['REDIS_', 'NEXT_PUBLIC_', 'TURSO_', 'JWT_', 'AWS_', 'DATABASE_'];
-Object.keys(process.env).forEach(key => {
-    if (debugPrefixes.some(p => key.startsWith(p)) || key.includes('DOPPLER') || key.includes('TOKEN')) {
-        const val = process.env[key];
-        const displayVal = val ? (val.length > 5 ? `${val.substring(0, 3)}...` : '[HIDDEN]') : '[EMPTY]';
-        console.log(`Env Verify: ${key}=${displayVal}`);
-    }
-});
-console.log('-------------------------------------------');
-
 async function bootstrap() {
     // Inject Winston Logger Context
     const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: WinstonModule.createLogger(winstonConfig) });
@@ -65,7 +52,6 @@ async function bootstrap() {
                 origin === 'https://jmks.vercel.app') {
                 callback(null, true);
             } else {
-                console.warn(`CORS REJECTED: ${origin}`);
                 callback(new Error(`CORS Error: Origin ${origin} not allowed`));
             }
         },

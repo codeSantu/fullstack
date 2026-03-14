@@ -12,45 +12,46 @@ describe('GetFestivalsHandler', () => {
         mockRepository = {
             findById: jest.fn(),
             findByCreatorId: jest.fn(),
+            findWithPagination: jest.fn(),
             save: jest.fn(),
             delete: jest.fn(),
         } as any;
 
-        // Mocking redis service matching Phase 8 pattern
         mockRedis = {
             get: jest.fn(),
             set: jest.fn(),
             del: jest.fn()
-        }
+        };
 
-        // In Phase 13 this logic will be injected. Injecting early for coverage.
         handler = new GetFestivalsHandler(mockRepository, mockRedis);
     });
 
-    it('should return festivals from DB on cache miss', async () => {
-        const mockEvents = [
+    it('should return festivals from DB with pagination', async () => {
+        const mockFestivals = [
             new FestivalEntity('1', 'F1', 'userA', new Date(), new Date('2026-10-10')),
         ];
-        mockRedis.get.mockResolvedValueOnce(null);
-        mockRepository.findByCreatorId.mockResolvedValueOnce(mockEvents);
+        mockRepository.findWithPagination.mockResolvedValueOnce({ items: mockFestivals, total: 1 });
 
-        const query = new GetFestivalsQuery('userA');
+        // creatorId, search, page, limit
+        const query = new GetFestivalsQuery('userA', '', 1, 10);
         const result = await handler.execute(query);
 
-        expect(result).toHaveLength(1);
-        expect(mockRepository.findByCreatorId).toHaveBeenCalledWith('userA');
+        expect(result.items).toHaveLength(1);
+        expect(result.total).toBe(1);
+        expect(mockRepository.findWithPagination).toHaveBeenCalledWith('', 0, 10);
     });
 
-    it('should return hydrated domain entities directly from Cache hit', async () => {
-        const mockDbJSON = JSON.stringify([{ id: '99', title: 'Cached Fest', creatorId: 'userB', startDate: new Date().toISOString(), endDate: new Date('2026-12-12').toISOString(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }]);
-        mockRedis.get.mockResolvedValueOnce(mockDbJSON);
+    it('should handle search term in pagination', async () => {
+        const mockFestivals = [
+            new FestivalEntity('1', 'Search Match', 'userA', new Date(), new Date('2026-10-10')),
+        ];
+        mockRepository.findWithPagination.mockResolvedValueOnce({ items: mockFestivals, total: 1 });
 
-        const query = new GetFestivalsQuery('userB');
+        // creatorId, search, page, limit
+        const query = new GetFestivalsQuery('userA', 'Search', 1, 10);
         const result = await handler.execute(query);
 
-        expect(result).toHaveLength(1);
-        expect(result[0]).toBeInstanceOf(FestivalEntity);
-        expect(result[0].title).toBe('Cached Fest');
-        expect(mockRepository.findByCreatorId).not.toHaveBeenCalled();
+        expect(result.items).toHaveLength(1);
+        expect(mockRepository.findWithPagination).toHaveBeenCalledWith('Search', 0, 10);
     });
 });

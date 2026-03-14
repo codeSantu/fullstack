@@ -1,4 +1,4 @@
-import { Controller, Put, Param, Req, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Put, Param, Req, Res, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -11,6 +11,7 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 
 @Controller('uploads')
 export class UploadsController {
+    private readonly logger = new Logger(UploadsController.name);
     @Put(':filename')
     async uploadFile(
         @Param('filename') filename: string,
@@ -27,7 +28,7 @@ export class UploadsController {
         });
 
         writeStream.on('error', (err) => {
-            console.error('Upload Error:', err);
+            this.logger.error('Upload Error:', err);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('File upload failed');
         });
     }

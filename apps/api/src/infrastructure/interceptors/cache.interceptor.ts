@@ -19,11 +19,9 @@ export class CacheInterceptor implements NestInterceptor {
         const cachedData = await this.redisService.get(cacheKey);
 
         if (cachedData) {
-            console.log(`[CacheInterceptor] CACHE HIT for ${request.url}`);
             return of(JSON.parse(cachedData));
         }
 
-        console.log(`[CacheInterceptor] CACHE MISS for ${request.url}`);
         return next.handle().pipe(
             tap(async (response) => {
                 // Cache response for 60 seconds TTL

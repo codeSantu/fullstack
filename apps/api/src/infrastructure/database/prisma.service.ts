@@ -1,4 +1,4 @@
-import { Injectable, Inject, Optional } from '@nestjs/common';
+import { Injectable, Inject, Optional, Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrismaLibSql } from '@prisma/adapter-libsql';
 import { tenantContext } from '../context/tenant.context';
@@ -11,11 +11,11 @@ export class PrismaService extends PrismaClient {
 
         let client: PrismaService;
         if (url && authToken) {
-            console.log('Using Turso LibSQL Database');
+            // Turso LibSQL Database
             const adapter = new PrismaLibSql({ url, authToken });
             client = new PrismaService({ adapter });
         } else {
-            console.log('Using SQLite Local Database with Driver Adapter');
+            // SQLite Local Database
             const localUrl = process.env.DATABASE_URL || 'file:./prisma/dev.db';
             const adapter = new PrismaLibSql({ url: localUrl });
             client = new PrismaService({ adapter });
