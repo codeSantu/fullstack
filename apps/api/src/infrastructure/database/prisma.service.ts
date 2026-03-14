@@ -16,7 +16,14 @@ export class PrismaService extends PrismaClient {
             client = new PrismaService({ adapter });
         } else {
             console.log('Using Local SQLite Database');
-            client = new PrismaService();
+            const sqliteUrl = process.env.DATABASE_URL || 'file:./dev.db';
+            client = new PrismaService({
+                datasources: {
+                    db: {
+                        url: sqliteUrl,
+                    },
+                },
+            });
         }
 
         const extended = client.$extends({
