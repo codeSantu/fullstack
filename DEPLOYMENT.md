@@ -20,16 +20,14 @@ Vercel is the recommended platform for the Next.js frontend.
 Railway is excellent for the NestJS API.
 
 1.  **New Project**: Select "Deploy from GitHub repo".
-2.  **Root Directory**: Select `apps/api`.
+2.  **Root Directory**: Set this to `/` (The repo root). This is **CRITICAL** for Turborepo.
 3.  **Environment Variables**:
     - `TURSO_DB_URL`: Your Turso connection string.
     - `TURSO_TOKEN`: Your Turso auth token.
-    - `PORT`: `3001` (or whatever the app expects, usually Railway provides this).
+    - `PORT`: `3001`
     - `JWT_SECRET`: A long random string.
-    - `AWS_ACCESS_KEY_ID`: (If using S3).
-    - `AWS_SECRET_ACCESS_KEY`: (If using S3).
-4.  **Build Command**: Railway should detect the `package.json`. Ensure it runs `npm run build`.
-5.  **Start Command**: `npm run start:prod` (or `node dist/main`).
+4.  **Build Command**: Set to `npx turbo run build --filter=api`
+5.  **Start Command**: Set to `npm run start --workspace=api`
 
 ## 🗄️ Database: Turso
 
@@ -81,14 +79,6 @@ The project is configured with a GitHub Actions workflow (`.github/workflows/dep
 | `RAILWAY_PRD_SERVICE_ID` | Railway | Service Settings > **Service ID** |
 | `DOPPLER_CONFIG_STG_TOKEN`| Doppler | Doppler Project > `stg` config > Service Tokens |
 | `DOPPLER_CONFIG_PRD_TOKEN`| Doppler | Doppler Project > `prd` config > Service Tokens |
-
-### ⚠️ Crucial Railway Monorepo Setup
-
-To ensure Railway can build your API with its dependencies (like `@ddd/shared`), configure the following in the Railway Dashboard:
-
-1.  **Service Settings > General > Root Directory**: Set this to `/` (The repo root).
-2.  **Service Settings > Build > Build Command**: Set to `npx turbo run build --filter=api`
-3.  **Service Settings > Deploy > Start Command**: Set to `npm run start --workspace=api`
 
 ### 🔒 Secret Management with Doppler
 
