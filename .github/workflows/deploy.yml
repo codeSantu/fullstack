@@ -58,7 +58,7 @@ jobs:
           cd apps/web
           npx vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
           # Remove rootDirectory to prevent double-pathing in monorepo CI
-          sed -i 's/"rootDirectory": "apps\/web",//g' .vercel/project.json
+          sed -i '/rootDirectory/d' .vercel/project.json
           doppler run --config stg -- npx vercel build --token=$VERCEL_TOKEN
           npx vercel deploy --prebuilt --token=$VERCEL_TOKEN
 
@@ -88,7 +88,7 @@ jobs:
           cd apps/web
           npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
           # Remove rootDirectory to prevent double-pathing in monorepo CI
-          sed -i 's/"rootDirectory": "apps\/web",//g' .vercel/project.json
+          sed -i '/rootDirectory/d' .vercel/project.json
           doppler run --config prd -- npx vercel build --prod --token=$VERCEL_TOKEN
           npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 
