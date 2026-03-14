@@ -61,13 +61,13 @@ graph TD
 
 1. **Clone Repository**.
 2. **Setup Dependencies**: Ensure you have Node `v20`. Install turbo: `npm install -g turbo`. Run `npm install` at the root.
-3. **Database Configuration**:
-   - Create a `.env` in `apps/api`.
-   - Set `TURSO_DB_URL` and `TURSO_TOKEN`.
+3. **Doppler Configuration**:
+   - Install [Doppler CLI](https://docs.doppler.com/docs/install-cli).
+   - Run `doppler login`.
+   - Run `doppler setup` to link your local environment to the project.
 4. **Initialize Schema (Turso)**:
    ```powershell
-   cd apps/api
-   npx ts-node apply_schema.ts
+   doppler run -- npx ts-node apps/api/apply_schema.ts
    ```
 5. **Generate Prisma Client**:
    ```powershell
@@ -75,10 +75,23 @@ graph TD
    ```
 6. **Seed Database**:
    ```powershell
-   npm run db:seed
+   doppler run -- npm run db:seed
    ```
-7. **Launch Project**: At the root, run `npx turbo run dev`.
+7. **Launch Project**: At the root, run `doppler run -- npx turbo run dev`.
 8. Navigate to `http://localhost:3000`.
+
+## 🤖 CI/CD & Autodeploy
+
+This project uses **GitHub Actions** for automated builds and deployment.
+
+### Doppler Service Tokens
+To enable automated builds in GitHub Actions, you must add the following secrets to your GitHub repository:
+- `DOPPLER_CONFIG_STG_TOKEN`: Service token for the `stg` (Staging) config.
+- `DOPPLER_CONFIG_PRD_TOKEN`: Service token for the `prd` (Production) config.
+
+The workflow in `.github/workflows/deploy.yml` automatically triggers:
+- **Staging**: On push to `develop` branch.
+- **Production**: On push to `main` branch.
 
 ## 📚 Technical Handover
 

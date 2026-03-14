@@ -60,15 +60,25 @@ We use **Doppler** to sync secrets across local, Vercel, and Railway environment
 3.  **Setup Project**: 
     - Go to Doppler Dashboard and create a project named `organizer-hub`.
     - Create three configs: `dev`, `stg`, and `prd`.
-4.  **Sync to Vercel**:
-    - Install the Doppler Vercel Integration in the Doppler dashboard.
-    - Map your `prd` config to the Vercel Project.
-5.  **Sync to Railway**:
-    - Use the Railway Doppler Integration or the CLI to inject secrets:
-    - `doppler secrets download --no-prefix --format env > .env` (for local)
-    - Railway also supports Doppler natively via integration.
+4.  **GitHub Actions Integration**:
+    - For automated builds, generate **Service Tokens** for `stg` and `prd` configs in the Doppler dashboard.
+    - Add them as GitHub Secrets: `DOPPLER_CONFIG_STG_TOKEN` and `DOPPLER_CONFIG_PRD_TOKEN`.
 
-## 🚀 Local Development with Doppler
+## 🚀 Automated Deployment
+
+The project is configured with a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automates the build process.
+
+### Staging
+- **Branch**: `develop`
+- **Command**: `doppler run --config stg -- npx turbo run build`
+- **Secrets**: Uses `DOPPLER_CONFIG_STG_TOKEN`.
+
+### Production
+- **Branch**: `main`
+- **Command**: `doppler run --config prd -- npx turbo run build`
+- **Secrets**: Uses `DOPPLER_CONFIG_PRD_TOKEN`.
+
+## 🛠️ Local Development with Doppler
 
 Instead of managing a local `.env` file manually, run your project via Doppler:
 ```bash

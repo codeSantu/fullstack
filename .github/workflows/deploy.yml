@@ -1,0 +1,49 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Doppler CLI
+        run: |
+          (curl -Ls https://cli.doppler.com/install.sh || wget -qO- https://cli.doppler.com/install.sh) | sudo sh
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Staging
+        if: github.ref == 'refs/heads/develop'
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_CONFIG_STG_TOKEN }}
+        run: doppler run --config stg -- npx turbo run build
+
+      - name: Build Production
+        if: github.ref == 'refs/heads/main'
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_CONFIG_PRD_TOKEN }}
+        run: doppler run --config prd -- npx turbo run build
+
+      # Add deployment steps here as per specific platform (Vercel/Railway)
+      # For now, we are focusing on the build process with Doppler as requested.
+      
+      - name: Notify Success
+        if: success()
+        run: echo "Build and Deployment simulation successful for ${{ github.ref_name }}"
