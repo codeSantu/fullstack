@@ -75,8 +75,8 @@ The project is configured with a GitHub Actions workflow (`.github/workflows/dep
 | `VERCEL_TOKEN` | Vercel | Account Settings > Tokens |
 | `VERCEL_ORG_ID` | Vercel | Run `vercel project ls` or check dashboard |
 | `VERCEL_PROJECT_ID` | Vercel | Run `vercel project ls` or check dashboard |
-| `RAILWAY_STG_TOKEN` | Railway | Project Settings > Tokens (Staging project) |
-| `RAILWAY_PRD_TOKEN` | Railway | Project Settings > Tokens (Production project) |
+| `RAILWAY_STG_TOKEN` | Railway | Project Settings > Tokens > **Generate Project Token** |
+| `RAILWAY_PRD_TOKEN` | Railway | Project Settings > Tokens > **Generate Project Token** |
 | `DOPPLER_CONFIG_STG_TOKEN`| Doppler | Doppler Project > `stg` config > Service Tokens |
 | `DOPPLER_CONFIG_PRD_TOKEN`| Doppler | Doppler Project > `prd` config > Service Tokens |
 
