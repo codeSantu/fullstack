@@ -14,12 +14,22 @@
     "tasks": {
         "build": {
             "dependsOn": [
-                "^build"
+                "^build",
+                "db:generate"
             ],
             "outputs": [
                 "dist/**",
                 ".next/**",
                 "!.next/cache/**"
+            ]
+        },
+        "db:generate": {
+            "cache": true,
+            "inputs": [
+                "prisma/schema.prisma"
+            ],
+            "outputs": [
+                "node_modules/.prisma/**"
             ]
         },
         "lint": {
