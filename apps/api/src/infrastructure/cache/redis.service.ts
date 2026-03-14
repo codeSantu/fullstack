@@ -5,10 +5,10 @@ import { createClient, RedisClientType } from 'redis';
 export class RedisService implements OnModuleInit, OnModuleDestroy {
     private client: RedisClientType;
     private isConnected = false;
+    private fallbackPromise: Promise<void> | null = null;
 
     constructor() {
         let redisUrl = process.env.REDIS_URL;
-        const isLocal = process.platform === 'win32' || process.platform === 'darwin' || process.env.NODE_ENV === 'development';
 
         if (!redisUrl) {
             let host = process.env.REDIS_HOST || process.env.REDISHOST;
@@ -16,8 +16,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
             const password = process.env.REDIS_PASSWORD || process.env.REDISPASSWORD || '';
             const user = process.env.REDIS_USER || process.env.REDISUSER || '';
 
-            // Proactive local detection: if we are local and host looks like railway internal, ignore it
-            if (isLocal && host?.includes('railway.internal')) {
+            // If we are local (detected via Windows/Mac) and host looks like railway internal, ignore it
+            const isLocalDev = process.platform === 'win32' || process.platform === 'darwin';
+            if (isLocalDev && host?.includes('railway.internal')) {
                 host = undefined;
             }
 
@@ -36,22 +37,23 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
             socket: {
                 connectTimeout: 5000,
                 reconnectStrategy: (retries) => {
-                    if (retries > 2) {
+                    if (retries > 1) {
                         return new Error('RECONNECT_LOCAL_FALLBACK');
                     }
-                    return Math.min(retries * 500, 2000);
+                    return 500;
                 }
             }
         });
 
         this.client.on('error', (err) => {
             if (err.message === 'RECONNECT_LOCAL_FALLBACK') {
-                this.reconnectToLocalFallback();
+                if (!this.fallbackPromise) {
+                    this.fallbackPromise = this.reconnectToUniversalFallback();
+                }
                 return;
             }
             if (!this.isConnected && !this.client.isOpen) {
-                // Only log if we aren't even connected yet
-                console.warn(`Redis Connection Warning: ${err.message}`);
+                console.warn(`Redis Connection Attempt failed: ${err.message}`);
             }
         });
 
@@ -61,25 +63,26 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         });
     }
 
-    private async reconnectToLocalFallback() {
+    private async reconnectToUniversalFallback() {
         if (this.isConnected) return;
         
-        const fallbacks = ['redis://127.0.0.1:6379'];
-        // If we are in a Linux environment (like a container), try host.docker.internal
-        if (process.platform === 'linux') {
-            fallbacks.push('redis://host.docker.internal:6379');
-        }
+        // Universal list of fallbacks for local dev, containers, and virtual environments
+        const fallbacks = [
+            'redis://127.0.0.1:6379',
+            'redis://host.docker.internal:6379',
+            'redis://localhost:6379'
+        ];
 
         for (const url of fallbacks) {
             if (this.isConnected) break;
-            console.log(`Attempting Redis connection to fallback: ${url}`);
+            console.log(`Trying Redis fallback: ${url}`);
             try {
                 if (this.client) {
                     await this.client.disconnect().catch(() => {});
                 }
                 this.client = createClient({ 
                     url,
-                    socket: { connectTimeout: 2000 }
+                    socket: { connectTimeout: 1500 }
                 });
                 this.client.on('error', () => { this.isConnected = false; });
                 this.client.on('connect', () => {
@@ -89,26 +92,39 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
                 await this.client.connect();
                 if (this.isConnected) return;
             } catch (e) {
-                // Try next fallback
+                // Continue to next fallback
             }
         }
         
         if (!this.isConnected) {
-            console.warn('All Redis connection attempts failed. Running in degraded mode.');
+            console.warn('All Redis fallbacks failed. Running in degraded cache mode.');
         }
     }
 
     async onModuleInit() {
         try {
-            await this.client.connect();
+            await this.client.connect().catch(() => {});
+            
+            // If the initial connection triggered a fallback, wait for the fallback to finish
+            if (this.fallbackPromise) {
+                await this.fallbackPromise;
+            }
+
+            if (!this.isConnected) {
+                console.warn('Redis not available. Starting in degraded mode.');
+            }
         } catch (e) {
-            console.warn('Could not connect to Redis on startup. Running in degraded cache mode.');
+            console.warn('Redis startup integration failed. Degraded mode active.');
         }
     }
 
     async onModuleDestroy() {
-        if (this.isConnected) {
-            await this.client.quit();
+        if (this.isConnected && this.client) {
+            try {
+                await this.client.quit();
+            } catch {
+                // Ignore close errors
+            }
         }
     }
 
@@ -117,7 +133,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         try {
             return await this.client.get(key);
         } catch {
-            return null; // Graceful degradation
+            return null;
         }
     }
 
@@ -126,7 +142,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         try {
             await this.client.setEx(key, expirationSeconds, value);
         } catch {
-            // Ignore set errors to not break application flow
+            // Ignore
         }
     }
 
