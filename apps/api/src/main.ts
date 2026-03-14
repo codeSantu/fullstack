@@ -44,11 +44,7 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
 
     app.enableCors({
-        origin: [
-            'http://localhost:3000',
-            'http://127.0.0.1:3000',
-            'http://10.36.29.172:3000'
-        ],
+        origin: true, // Allow all origins in production, or configure via env if stricter control is needed
         credentials: true,
     });
 
