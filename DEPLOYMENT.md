@@ -66,17 +66,27 @@ We use **Doppler** to sync secrets across local, Vercel, and Railway environment
 
 ## 🚀 Automated Deployment
 
-The project is configured with a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automates the build process.
+The project is configured with a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automates the entire build and deployment process.
+
+### Required GitHub Secrets
+
+| Secret Name | Platform | Where to find it |
+| --- | --- | --- |
+| `VERCEL_TOKEN` | Vercel | Account Settings > Tokens |
+| `VERCEL_ORG_ID` | Vercel | Run `vercel project ls` or check dashboard |
+| `VERCEL_PROJECT_ID` | Vercel | Run `vercel project ls` or check dashboard |
+| `RAILWAY_STG_TOKEN` | Railway | Project Settings > Tokens (Staging project) |
+| `RAILWAY_PRD_TOKEN` | Railway | Project Settings > Tokens (Production project) |
+| `DOPPLER_CONFIG_STG_TOKEN`| Doppler | Doppler Project > `stg` config > Service Tokens |
+| `DOPPLER_CONFIG_PRD_TOKEN`| Doppler | Doppler Project > `prd` config > Service Tokens |
 
 ### Staging
 - **Branch**: `develop`
-- **Command**: `doppler run --config stg -- npx turbo run build`
-- **Secrets**: Uses `DOPPLER_CONFIG_STG_TOKEN`.
+- **Actions**: Builds using Doppler `stg` config and deploys to Railway (service: `api`) and Vercel.
 
 ### Production
-- **Branch**: `main`
-- **Command**: `doppler run --config prd -- npx turbo run build`
-- **Secrets**: Uses `DOPPLER_CONFIG_PRD_TOKEN`.
+- **Branch**: `main` or `master`
+- **Actions**: Builds using Doppler `prd` config and deploys to Railway (service: `api`) and Vercel.
 
 ## 🛠️ Local Development with Doppler
 

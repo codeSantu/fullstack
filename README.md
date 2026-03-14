@@ -84,14 +84,22 @@ graph TD
 
 This project uses **GitHub Actions** for automated builds and deployment.
 
-### Doppler Service Tokens
-To enable automated builds in GitHub Actions, you must add the following secrets to your GitHub repository:
-- `DOPPLER_CONFIG_STG_TOKEN`: Service token for the `stg` (Staging) config.
-- `DOPPLER_CONFIG_PRD_TOKEN`: Service token for the `prd` (Production) config.
+### Deployment Secrets
+To enable automated deployments, add the following secrets to your GitHub repository:
+
+| Secret | Description |
+| --- | --- |
+| `DOPPLER_CONFIG_STG_TOKEN` | Doppler Service Token for Staging (`stg`) |
+| `DOPPLER_CONFIG_PRD_TOKEN` | Doppler Service Token for Production (`prd`) |
+| `VERCEL_TOKEN` | Your Vercel Personal Access Token |
+| `VERCEL_ORG_ID` | Your Vercel Team/Organization ID |
+| `VERCEL_PROJECT_ID` | Your Vercel Project ID |
+| `RAILWAY_STG_TOKEN` | Railway API Token for Staging project |
+| `RAILWAY_PRD_TOKEN` | Railway API Token for Production project |
 
 The workflow in `.github/workflows/deploy.yml` automatically triggers:
 - **Staging**: On push to `develop` branch.
-- **Production**: On push to `main` branch.
+- **Production**: On push to `main` or `master` branches.
 
 ## 📚 Technical Handover
 
