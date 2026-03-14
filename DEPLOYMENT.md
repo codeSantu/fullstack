@@ -39,6 +39,18 @@ cd apps/api
 npx ts-node apply_schema.ts
 ```
 
+## ⚡ Hyper-speed CI (Turborepo Remote Cache)
+
+To enable "Full Turbo" (zero-second builds for unchanged code) in GitHub Actions:
+
+1.  **Get a Turbo Token**:
+    *   If using Vercel, run `npx turbo login` then `npx turbo link`.
+    *   Alternatively, use a custom Remote Cache server.
+2.  **Add GitHub Secrets**:
+    *   `TURBO_TOKEN`: Your access token.
+    *   `TURBO_TEAM`: Your team/username.
+3.  **Check the Workflow**: The `.github/workflows/ci.yml` is already configured to use these secrets. Your builds will now be significantly faster by sharing cache hits across your team and CI.
+
 ## 🔐 Environment Syncing
 
 We recommend using **Doppler** or **Infisical** to manage secrets across Vercel and Railway, but manual entry in their respective dashboards also works perfectly.
