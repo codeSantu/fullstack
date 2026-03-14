@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, Optional } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrismaLibSql } from '@prisma/adapter-libsql';
 import { tenantContext } from '../context/tenant.context';
@@ -60,7 +60,7 @@ export class PrismaService extends PrismaClient {
         return extended;
     }
 
-    constructor(options?: any) {
+    constructor(@Optional() @Inject('PRISMA_OPTIONS') options?: any) {
         super(options);
     }
 }
