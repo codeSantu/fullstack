@@ -28,23 +28,25 @@ jobs:
         uses: dopplerhq/cli-action@v1
 
       - name: Install dependencies
-        run: npm ci
+        # Added --prefer-offline to speed up npm install
+        run: npm ci --prefer-offline --no-audit
 
       - name: Generate Prisma Client
-        run: npx turbo run db:generate
+        # Only generate for the api to save time
+        run: npx turbo run db:generate --filter=api
 
       # --- STAGING DEPLOYMENT ---
       - name: Build Staging
         if: github.ref == 'refs/heads/develop'
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_CONFIG_STG_TOKEN }}
-        run: doppler run --config stg -- npx turbo run build
+        # Only build the API for the Railway step
+        run: doppler run --config stg -- npx turbo run build --filter=api
 
       - name: Deploy API to Railway (Staging)
         if: github.ref == 'refs/heads/develop'
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_STG_TOKEN }}
-        # Replaced Service ID with Service Name 'api' for better reliability
         run: npx @railway/cli up --service api --detach --ci
 
       - name: Deploy Web to Vercel (Staging)
@@ -64,13 +66,13 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_CONFIG_PRD_TOKEN }}
-        run: doppler run --config prd -- npx turbo run build
+        # Focus build on api specifically
+        run: doppler run --config prd -- npx turbo run build --filter=api
 
       - name: Deploy API to Railway (Production)
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_PRD_TOKEN }}
-        # Using service name 'api' instead of ID secret to avoid "Service not found"
         run: npx @railway/cli up --service api --detach --ci
 
       - name: Deploy Web to Vercel (Production)
