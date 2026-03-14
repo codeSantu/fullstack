@@ -47,7 +47,8 @@ async function bootstrap() {
         origin: (origin, callback) => {
             const allowedOrigins = [
                 'https://jmks.vercel.app',
-                'https://jmks-pingsantu-gmailcoms-projects.vercel.app'
+                'https://jmks-pingsantu-gmailcoms-projects.vercel.app',
+                'https://api-production.up.railway.app'
             ];
             if (!origin || allowedOrigins.includes(origin) || origin.includes('.railway.app')) {
                 callback(null, true);
