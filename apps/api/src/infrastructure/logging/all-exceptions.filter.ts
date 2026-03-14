@@ -7,7 +7,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         super();
     }
 
-    catch(exception: unknown, host: ArgumentsHost) {
+    catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const request = ctx.getRequest();
         const response = ctx.getResponse();
@@ -17,9 +17,12 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
                 ? exception.getStatus()
                 : HttpStatus.INTERNAL_SERVER_ERROR;
 
+        const exceptionResponse = exception instanceof HttpException ? exception.getResponse() : null;
         const message =
             exception instanceof HttpException
-                ? exception.message
+                ? typeof exceptionResponse === 'object' 
+                    ? (exceptionResponse as any).message || exception.message 
+                    : exceptionResponse || exception.message
                 : 'Internal server error';
 
         const isDebug = process.env.DEBUG_MODE === 'true';
@@ -40,7 +43,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
             timestamp: new Date().toISOString(),
             path: request.url,
             message: message,
-            ...(isDebug ? { stack, debugInfo: (exception as any)?.response || null } : {}),
+            ...(isDebug ? { stack, debugInfo: (exception as any)?.response || exceptionResponse || null } : {}),
         });
     }
 }

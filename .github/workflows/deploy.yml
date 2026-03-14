@@ -7,6 +7,8 @@ on:
       - master
       - develop
 
+  workflow_dispatch:
+
 jobs:
   deploy:
     name: Build and Deploy
@@ -66,13 +68,11 @@ jobs:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_CONFIG_PRD_TOKEN }}
         run: doppler run --config prd -- npx turbo run build
 
-#      - name: Deploy API to Railway (Production)
-#        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-#        env:
-#          RAILWAY_TOKEN: ${{ secrets.RAILWAY_PRD_TOKEN }}
-#        run: |
-#          npm install -g @railway/cli
-#          railway up --service api --detach --ci
+      - name: Deploy API to Railway (Production)
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_PRD_TOKEN }}
+        run: npx @railway/cli up --service api --detach --ci
 
       - name: Deploy Web to Vercel (Production)
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
