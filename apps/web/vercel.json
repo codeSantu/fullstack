@@ -1,0 +1,3 @@
+{
+  "ignoreCommand": "echo 'Build handled by GitHub Actions' && exit 0"
+}
