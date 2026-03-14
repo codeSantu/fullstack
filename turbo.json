@@ -1,6 +1,8 @@
 {
     "$schema": "https://turbo.build/schema.json",
     "globalPassThroughEnv": [
+        "DATABASE_URL",
+        "JWT_SECRET",
         "TURSO_DB_URL",
         "TURSO_TOKEN",
         "AWS_REGION",
@@ -37,35 +39,13 @@
                 "node_modules/.prisma/**"
             ]
         },
-        "lint": {
-            "dependsOn": [
-                "^lint"
-            ]
-        },
-        "check": {
-            "dependsOn": [
-                "lint",
-                "test",
-                "build"
-            ]
-        },
-        "dev": {
-            "cache": false,
-            "persistent": true
-        },
-        "test": {
-            "dependsOn": [
-                "build"
-            ],
-            "outputs": [
-                "coverage/**"
-            ]
-        },
         "test:e2e": {
+            "cache": false,
             "dependsOn": [
                 "build"
             ],
             "outputs": [
+                "coverage/**",
                 "playwright-report/**",
                 "test-results/**"
             ]
