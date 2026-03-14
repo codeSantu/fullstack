@@ -90,6 +90,13 @@ To ensure Railway can build your API with its dependencies (like `@ddd/shared`),
 2.  **Service Settings > Build > Build Command**: Set to `npx turbo run build --filter=api`
 3.  **Service Settings > Deploy > Start Command**: Set to `npm run start --workspace=api`
 
+### 🔒 Secret Management with Doppler
+
+Ensure the following secrets are set in your Doppler Project:
+
+1.  **`NEXT_PUBLIC_API_BASE_URL`**: The public URL of your Railway API (e.g., `https://api-production.up.railway.app/api`).
+2.  **`NEXT_PUBLIC_SOCKET_URL`**: The public URL of your Railway API (e.g., `https://api-production.up.railway.app`).
+
 ### Staging
 - **Branch**: `develop`
 - **Actions**: Builds using Doppler `stg` config and deploys to Railway (service: `api`) and Vercel.

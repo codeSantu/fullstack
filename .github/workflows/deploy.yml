@@ -49,13 +49,10 @@ jobs:
 
       - name: Deploy Web to Vercel (Staging)
         if: github.ref == 'refs/heads/develop'
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          alias-domains: |
-            staging.yourdomain.com
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_CONFIG_STG_TOKEN }}
+        run: |
+          doppler run --config stg -- npx vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --yes
 
       # --- PRODUCTION DEPLOYMENT ---
       - name: Build Production
@@ -74,12 +71,10 @@ jobs:
 
       - name: Deploy Web to Vercel (Production)
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_CONFIG_PRD_TOKEN }}
+        run: |
+          doppler run --config prd -- npx vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
 
       - name: Notify Success
         if: success()
