@@ -6,7 +6,6 @@ on:
       - main
       - master
       - develop
-
   workflow_dispatch:
 
 jobs:
@@ -45,9 +44,8 @@ jobs:
         if: github.ref == 'refs/heads/develop'
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_STG_TOKEN }}
-        run: |
-          npm install -g @railway/cli
-          railway up --service ${{ secrets.RAILWAY_STG_SERVICE_ID }} --detach --ci
+        # Replaced Service ID with Service Name 'api' for better reliability
+        run: npx @railway/cli up --service api --detach --ci
 
       - name: Deploy Web to Vercel (Staging)
         if: github.ref == 'refs/heads/develop'
@@ -72,7 +70,8 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_PRD_TOKEN }}
-        run: npx @railway/cli up --service ${{ secrets.RAILWAY_PRD_SERVICE_ID }} --detach --ci
+        # Using service name 'api' instead of ID secret to avoid "Service not found"
+        run: npx @railway/cli up --service api --detach --ci
 
       - name: Deploy Web to Vercel (Production)
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
