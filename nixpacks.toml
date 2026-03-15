@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ["bun"]
+nixPkgs = ["nodejs_20", "bun"]
 
 [phases.install]
 cmds = ["bun install"]
 
 [phases.build]
-cmds = ["bun run build"]
+cmds = ["npx turbo run build --filter=api"]
 
 [start]
-cmd = "bun run start"
+cmd = "node apps/api/dist/src/main.js"
