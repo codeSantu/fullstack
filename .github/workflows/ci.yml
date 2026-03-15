@@ -27,19 +27,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Setup Node.js AND force npm v11+
+      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-          check-latest: true
 
-      - name: Force npm v11+ for CI
+      # Force npm v11 (works reliably)
+      - name: Upgrade npm to v11+
         run: |
-          corepack enable
-          corepack prepare npm@11.23.1 --activate
-          npm --version
+          npm install -g npm@11
+          echo "Using npm version: $(npm --version)"
 
       # Install dependencies, skip optional Android ARM
       - name: Install dependencies
