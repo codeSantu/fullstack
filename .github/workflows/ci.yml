@@ -54,13 +54,14 @@ jobs:
             **/.yarn/build-state.yml
           key: yarn-v3-${{ hashFiles('**/yarn.lock') }}
 
-      # 5️⃣ Cache Turbo build outputs
+      # 5️⃣ Cache Turbo outputs including Prisma client
       - name: Cache Turbo Output
         uses: actions/cache@v3
         with:
           path: |
             .turbo
             node_modules/.cache/turbo
+            apps/api/node_modules/@prisma/client
           key: turbo-${{ github.sha }}
           restore-keys: |
             turbo-
@@ -69,7 +70,7 @@ jobs:
       - name: Clean previous builds
         run: |
           rm -rf node_modules
-          yarn turbo prune --force
+          yarn dlx turbo prune --force
 
       # 7️⃣ Install dependencies
       - name: Install dependencies
@@ -77,15 +78,15 @@ jobs:
 
       # 8️⃣ Generate Prisma client for API
       - name: Generate Prisma Client
-        run: npx turbo run db:generate --filter=api
+        run: yarn dlx turbo run db:generate --filter=api
 
       # 9️⃣ Build all packages
       - name: Build packages
-        run: npx turbo run build
+        run: yarn dlx turbo run build
 
       # 🔟 Run type checks
       - name: Type Check
-        run: npx turbo run check
+        run: yarn dlx turbo run check
 
       # 1️⃣1️⃣ Deploy frontend to Netlify
       - name: Deploy Web to Netlify
