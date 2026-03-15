@@ -31,17 +31,19 @@ jobs:
       # 1️⃣ Checkout code
       - uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js & Corepack
-      - name: Setup Node.js & Enable Corepack
-        uses: actions/setup-node@v4
+      # 2️⃣ Setup Node.js 20
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      # 3️⃣ Enable Corepack & Yarn v3
+      - name: Enable Corepack & Yarn v3
         run: |
           corepack enable
           corepack prepare yarn@3.6.0 --activate
           yarn --version
 
-      # 3️⃣ Cache Yarn v3 dependencies
+      # 4️⃣ Cache Yarn v3 dependencies
       - name: Cache Yarn v3 Dependencies
         uses: actions/cache@v3
         with:
@@ -52,8 +54,8 @@ jobs:
             **/.yarn/build-state.yml
           key: yarn-v3-${{ hashFiles('**/yarn.lock') }}
 
-      # 4️⃣ Cache Turbo outputs
-      - name: Cache Turbo Build Output
+      # 5️⃣ Cache Turbo build outputs
+      - name: Cache Turbo Output
         uses: actions/cache@v3
         with:
           path: |
@@ -63,35 +65,35 @@ jobs:
           restore-keys: |
             turbo-
 
-      # 5️⃣ Clean previous outputs
-      - name: Clean previous builds & cache
+      # 6️⃣ Clean previous builds
+      - name: Clean previous builds
         run: |
           rm -rf node_modules
           yarn turbo prune --force
 
-      # 6️⃣ Install dependencies
+      # 7️⃣ Install dependencies
       - name: Install dependencies
         run: yarn install --immutable
 
-      # 7️⃣ Generate Prisma client for API
+      # 8️⃣ Generate Prisma client for API
       - name: Generate Prisma Client
         run: npx turbo run db:generate --filter=api
 
-      # 8️⃣ Build all packages
+      # 9️⃣ Build all packages
       - name: Build packages
         run: npx turbo run build
 
-      # 9️⃣ Run type checks
+      # 🔟 Run type checks
       - name: Type Check
         run: npx turbo run check
 
-      # 🔟 Deploy frontend to Netlify
+      # 1️⃣1️⃣ Deploy frontend to Netlify
       - name: Deploy Web to Netlify
         run: |
           yarn workspace web build
           npx netlify deploy --prod --dir=apps/web/out
 
-      # 1️⃣1️⃣ Deploy backend/API to Railway
+      # 1️⃣2️⃣ Deploy backend/API to Railway
       - name: Deploy API to Railway
         run: |
           curl -sSL https://cli.railway.app/install.sh | sh
