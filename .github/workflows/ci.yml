@@ -12,9 +12,8 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
     services:
-      # Selective services: Postgres only if needed for specific tests
-      # Redis is kept as it's critical for API caching layers
       redis:
         image: redis:7-alpine
         ports:
@@ -27,14 +26,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Turbo Check & Build
+      # Generate Prisma client
+      - name: Generate Prisma Client
+        run: npx turbo run db:generate --filter=api
+
+      # Build all packages first
+      - name: Build packages
+        run: npx turbo run build
+
+      # Then run type checks
+      - name: Type Check
         run: npx turbo run check
