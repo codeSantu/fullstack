@@ -33,13 +33,13 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      # 🔹 Upgrade npm to match package.json engines (fix EBADENGINE)
+      # Upgrade npm to match package.json engines
       - name: Upgrade npm to v11+
         run: npm install -g npm@11
 
-      # 🔹 Install dependencies skipping optional Android ARM packages
+      # Install dependencies skipping optional platform-specific packages
       - name: Install dependencies
-        run: npm ci --omit=optional
+        run: npm ci --omit=optional --prefer-offline --no-audit
 
       # Generate Prisma client
       - name: Generate Prisma Client
