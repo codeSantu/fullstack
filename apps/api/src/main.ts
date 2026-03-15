@@ -52,6 +52,7 @@ async function bootstrap() {
         'https://jmks.vercel.app',
         'http://localhost:3000',
         'http://localhost:3001',
+        'https://jmksangha.netlify.app'
     ];
 
     app.enableCors({
