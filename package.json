@@ -1,6 +1,7 @@
 {
   "name": "fullstack-ddd-boilerplate",
   "private": true,
+  "version": "1.0.0",
   "packageManager": "npm@11.11.1",
   "workspaces": [
     "apps/*",
@@ -11,21 +12,56 @@
     "next": "16.1.6",
     "@netlify/plugin-nextjs": "5.15.9"
   },
+  "engines": {
+    "node": ">=20.19.0",
+    "npm": ">=11.11.1"
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "test:e2e": "turbo run test:e2e"
+    "test:e2e": "turbo run test:e2e",
+    "redeploy:force": "git commit --allow-empty -m 'force redeploy' && npm run redeploy:all",
+    "redeploy:all": "doppler run -- bash -c \"set -e; npx turbo run build && turso db push && railway up --environment production && netlify deploy --prod --dir=apps/web/out\"",
+    "clean": "turbo clean && rimraf node_modules",
+    "build:web": "turbo run build --filter=web",
+    "deploy:web": "netlify deploy --prod --dir=apps/web/out"
   },
-  "engines": {
-    "node": ">=20.19.0"
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1"
   },
   "devDependencies": {
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.15.1",
     "netlify-cli": "^24.2.0",
     "turbo": "^2.8.17",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "rimraf": "^5.0.0"
+  },
+  "turbo": {
+    "$schema": "https://turbo.build/schema.json",
+    "pipeline": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "outputs": [
+          "dist/**",
+          ".next/**"
+        ]
+      },
+      "dev": {
+        "cache": false
+      },
+      "lint": {
+        "outputs": []
+      },
+      "test": {
+        "outputs": []
+      },
+      "test:e2e": {
+        "outputs": []
+      }
+    }
   }
 }

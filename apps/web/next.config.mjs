@@ -7,6 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig = {
     transpilePackages: ["@ddd/shared"],
     allowedDevOrigins: ['local-origin.dev', '*.local-origin.dev'],
+    output: 'export',
+    distDir: 'out',
 
     // Fixes the relative path math for root-level builds
     outputFileTracingRoot: path.join(__dirname, '../../'),

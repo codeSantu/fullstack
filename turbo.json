@@ -20,6 +20,11 @@
         "NODE_ENV"
     ],
     "tasks": {
+        "redeploy": {
+            "dependsOn": [],
+            "outputs": [],
+            "cache": false
+        },
         "dev": {
             "cache": false,
             "persistent": true
@@ -58,6 +63,20 @@
                 "playwright-report/**",
                 "test-results/**"
             ]
+        },
+        "build:web": {
+            "dependsOn": [
+                "build"
+            ],
+            "outputs": [
+                "apps/web/out/**"
+            ]
+        },
+        "deploy:web": {
+            "dependsOn": [
+                "build:web"
+            ],
+            "outputs": []
         }
     }
 }

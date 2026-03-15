@@ -34,6 +34,7 @@
         "tailwind-merge": "^2.2.1"
     },
     "devDependencies": {
+        "@netlify/plugin-nextjs": "^5.15.9",
         "@playwright/test": "^1.58.2",
         "@types/node": "^25.5.0",
         "@types/react": "^18",
