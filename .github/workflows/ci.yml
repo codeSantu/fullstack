@@ -33,11 +33,11 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      # Upgrade npm to match package.json engines
+      # 🔹 Upgrade npm to match package.json engines (fix EBADENGINE)
       - name: Upgrade npm to v11+
         run: npm install -g npm@11
 
-      # Install dependencies skipping optional platform-specific packages
+      # 🔹 Install dependencies skipping optional platform-specific packages
       - name: Install dependencies
         run: npm ci --omit=optional --prefer-offline --no-audit
 
