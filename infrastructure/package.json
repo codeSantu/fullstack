@@ -1,9 +1,7 @@
 {
     "name": "infrastructure",
     "version": "0.1.0",
-    "bin": {
-        "infrastructure": "bin/infrastructure.js"
-    },
+    "bin": "bin/infrastructure.js",
     "scripts": {
         "build": "tsc",
         "watch": "tsc -w",

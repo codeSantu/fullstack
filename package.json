@@ -2,7 +2,7 @@
   "name": "fullstack-ddd-boilerplate",
   "private": true,
   "version": "1.0.0",
-  "packageManager": "npm@11.11.1",
+  "packageManager": "yarn@3.6.0",
   "workspaces": [
     "apps/*",
     "packages/*",
@@ -13,8 +13,7 @@
     "@netlify/plugin-nextjs": "5.15.9"
   },
   "engines": {
-    "node": ">=20.19.0",
-    "npm": ">=11.11.1"
+    "node": ">=20.19.0"
   },
   "scripts": {
     "build": "turbo run build",
@@ -22,7 +21,7 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
-    "redeploy:force": "git commit --allow-empty -m 'force redeploy' && npm run redeploy:all",
+    "redeploy:force": "git commit --allow-empty -m 'force redeploy' && yarn run redeploy:all",
     "redeploy:all": "doppler run -- bash -c \"set -e; npx turbo run build && turso db push && railway up --environment production && netlify deploy --prod --dir=apps/web/out\"",
     "clean": "turbo clean && rimraf node_modules",
     "build:web": "turbo run build --filter=web",
@@ -34,9 +33,9 @@
   },
   "devDependencies": {
     "netlify-cli": "^24.2.0",
+    "rimraf": "^5.0.0",
     "turbo": "^2.8.17",
-    "typescript": "^5.9.3",
-    "rimraf": "^5.0.0"
+    "typescript": "^5.9.3"
   },
   "turbo": {
     "$schema": "https://turbo.build/schema.json",
