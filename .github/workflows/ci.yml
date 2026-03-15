@@ -45,29 +45,36 @@ jobs:
           corepack prepare yarn@3.6.0 --activate
           yarn --version
 
-      # 4️⃣ Install dependencies
+      # 4️⃣ Clean previous outputs (optional but recommended)
+      - name: Clean Turborepo & node_modules
+        run: |
+          rm -rf node_modules
+          yarn turbo prune --force
+          yarn cache clean
+
+      # 5️⃣ Install dependencies
       - name: Install dependencies
         run: yarn install --immutable
 
-      # 5️⃣ Generate Prisma client for API
+      # 6️⃣ Generate Prisma client for API
       - name: Generate Prisma Client
         run: npx turbo run db:generate --filter=api
 
-      # 6️⃣ Build all packages
+      # 7️⃣ Build all packages
       - name: Build packages
         run: npx turbo run build
 
-      # 7️⃣ Run type checks
+      # 8️⃣ Run type checks
       - name: Type Check
         run: npx turbo run check
 
-      # 8️⃣ Deploy frontend to Netlify
+      # 9️⃣ Deploy frontend to Netlify
       - name: Deploy Web to Netlify
         run: |
           yarn workspace web build
           netlify deploy --prod --dir=apps/web/out
 
-      # 9️⃣ Deploy backend/API to Railway
+      # 🔟 Deploy backend/API to Railway
       - name: Deploy API to Railway
         run: |
           curl -sSL https://cli.railway.app/install.sh | sh
