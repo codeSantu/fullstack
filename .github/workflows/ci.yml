@@ -27,24 +27,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Setup Node.js
-      - name: Setup Node.js
+      # Setup Node.js **and npm v11+ at the same time**
+      - name: Setup Node.js with correct npm
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
+          check-latest: true
 
-      # Upgrade npm to v11+ to match package.json engine requirement
-      - name: Upgrade npm
+      # Force npm to the correct version in case setup-node didn’t
+      - name: Upgrade npm if needed
         run: |
           npm install -g npm@11
           echo "Using npm version: $(npm --version)"
 
-      # Install dependencies, skipping optional platform-specific packages
+      # Install dependencies, skip optional Android ARM package
       - name: Install dependencies
-        run: |
-          echo "Using npm version: $(npm --version)"
-          npm ci --omit=optional --prefer-offline --no-audit
+        run: npm ci --omit=optional --prefer-offline --no-audit
 
       # Generate Prisma client
       - name: Generate Prisma Client
