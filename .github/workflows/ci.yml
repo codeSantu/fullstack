@@ -7,11 +7,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build-and-deploy:
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
     services:
       redis:
@@ -34,15 +36,22 @@ jobs:
           node-version: 20
           cache: npm
 
-      # Force npm v11 (works reliably)
-      - name: Upgrade npm to v11+
+      # Upgrade npm to 11+
+      - name: Upgrade npm
         run: |
           npm install -g npm@11
-          echo "Using npm version: $(npm --version)"
+          npm --version
 
-      # Install dependencies, skip optional Android ARM
+      # Enable Corepack & Yarn 3
+      - name: Enable Corepack & Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@3.6.0 --activate
+          yarn --version
+
+      # Install dependencies
       - name: Install dependencies
-        run: npm ci --omit=optional --prefer-offline --no-audit
+        run: yarn install --immutable
 
       # Generate Prisma client
       - name: Generate Prisma Client
@@ -55,3 +64,15 @@ jobs:
       # Type check
       - name: Type Check
         run: npx turbo run check
+
+      # Deploy frontend to Netlify
+      - name: Deploy Web to Netlify
+        run: |
+          npx netlify deploy --dir=apps/web/out --prod --site=$NETLIFY_SITE_ID
+
+      # Deploy backend to Railway
+      - name: Deploy API to Railway
+        run: |
+          curl -sSL https://cli.railway.app/install.sh | sh
+          railway login --apiKey ${{ secrets.RAILWAY_API_KEY }}
+          railway up --service api
