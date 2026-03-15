@@ -49,6 +49,7 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
 
     const allowedOrigins = [
+        '*',
         'https://jmks.vercel.app',
         'http://localhost:3000',
         'http://localhost:3001',
