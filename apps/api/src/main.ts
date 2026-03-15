@@ -22,7 +22,6 @@ async function bootstrap() {
 
     // Prefix all HTTP routes with /api BEFORE Swagger/Static Assets
     app.setGlobalPrefix('api');
-
     // Serve Local Static Assets for Virtual S3 Provider
     app.useStaticAssets(join(process.cwd(), 'uploads'), {
         prefix: '/api/uploads/',
@@ -53,6 +52,7 @@ async function bootstrap() {
         'https://jmks.vercel.app',
         'http://localhost:3000',
         'http://localhost:3001',
+        'https://jmksangha.netlify.app'
     ];
 
     app.enableCors({

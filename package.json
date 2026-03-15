@@ -1,12 +1,16 @@
 {
   "name": "fullstack-ddd-boilerplate",
   "private": true,
-  "packageManager": "npm@10.8.2",
+  "packageManager": "npm@11.11.1",
   "workspaces": [
     "apps/*",
     "packages/*",
     "infrastructure"
   ],
+  "overrides": {
+    "next": "16.1.6",
+    "@netlify/plugin-nextjs": "5.15.9"
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -18,9 +22,10 @@
     "node": ">=20.19.0"
   },
   "devDependencies": {
-    "turbo": "^2.0.0",
-    "typescript": "^5.0.0",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
-    "class-transformer": "^0.5.1"
+    "netlify-cli": "^24.2.0",
+    "turbo": "^2.8.17",
+    "typescript": "^5.9.3"
   }
 }

@@ -11,8 +11,8 @@ describe('EventEntity', () => {
     });
 
     it('should throw error on empty title', () => {
-        expect(() => new EventEntity('2', '', mockUserId, new Date())).toThrowError('Event title cannot be empty');
-        expect(() => new EventEntity('2', '   ', mockUserId, new Date())).toThrowError('Event title cannot be empty');
+        expect(() => new EventEntity('2', '', mockUserId, new Date())).toThrow('Event title cannot be empty');
+        expect(() => new EventEntity('2', '   ', mockUserId, new Date())).toThrow('Event title cannot be empty');
     });
 
     describe('Row-Level Security / Ownership', () => {
@@ -30,13 +30,13 @@ describe('EventEntity', () => {
         it('should reject non-owner trying to update details', () => {
             expect(() => {
                 event.updateDetails('Hacked Title', null, null, otherUserId);
-            }).toThrowError('Unauthorized: You can only modify events you created');
+            }).toThrow('Unauthorized: You can only modify events you created');
         });
 
         it('should fail update if new title is empty (even for owner)', () => {
             expect(() => {
                 event.updateDetails('', null, null, mockUserId);
-            }).toThrowError('Event title cannot be empty');
+            }).toThrow('Event title cannot be empty');
         });
     });
 });

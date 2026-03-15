@@ -13,11 +13,11 @@ describe('FestivalEntity', () => {
     });
 
     it('should throw error if title is empty', () => {
-        expect(() => new FestivalEntity('2', '', organizerId, start, end)).toThrowError('Festival title cannot be empty');
+        expect(() => new FestivalEntity('2', '', organizerId, start, end)).toThrow('Festival title cannot be empty');
     });
 
     it('should throw error if end date is before start date', () => {
-        expect(() => new FestivalEntity('3', 'Fest', organizerId, end, start)).toThrowError('Festival end date must be after start date');
+        expect(() => new FestivalEntity('3', 'Fest', organizerId, end, start)).toThrow('Festival end date must be after start date');
     });
 
     describe('Permissions', () => {
@@ -34,7 +34,7 @@ describe('FestivalEntity', () => {
 
         it('should throw unauthorized if requested by non-organizer', () => {
             const newEnd = new Date('2026-10-10');
-            expect(() => f.updateDetails('New Fest', start, newEnd, null, null, null, otherUserId)).toThrowError('Unauthorized: You can only modify festivals you organize');
+            expect(() => f.updateDetails('New Fest', start, newEnd, null, null, null, otherUserId)).toThrow('Unauthorized: You can only modify festivals you organize');
         });
     });
 });

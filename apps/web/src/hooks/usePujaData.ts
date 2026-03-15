@@ -172,25 +172,25 @@ function persistToStorage(value: PujaData) {
 // Placeholder mapping; will be refined once /puja/current backend shape is finalized
 function mapApiToPujaData(apiData: any): PujaData | null {
     if (!apiData) return null;
-    
+
     // Robust mapping as backend fields might differ from frontend interface
     const festivalTitle = apiData.festivalTitle || apiData.title || apiData._festival?.title;
     const festivalSubtitle = apiData.festivalSubtitle || apiData.subtitle || apiData._festival?.subtitle;
-    
+
     // Attempt to parse JSON strings if they arrived as strings
     let scheduleDays = apiData.scheduleDays;
     if (typeof scheduleDays === 'string') {
-        try { scheduleDays = JSON.parse(scheduleDays); } catch(e) {}
+        try { scheduleDays = JSON.parse(scheduleDays); } catch (e) { }
     }
-    
+
     let committeeSections = apiData.committeeSections || apiData.committeeJson;
     if (typeof committeeSections === 'string') {
-        try { committeeSections = JSON.parse(committeeSections); } catch(e) {}
+        try { committeeSections = JSON.parse(committeeSections); } catch (e) { }
     }
 
     let footer = apiData.footer || apiData.footerJson;
     if (typeof footer === 'string') {
-        try { footer = JSON.parse(footer); } catch(e) {}
+        try { footer = JSON.parse(footer); } catch (e) { }
     }
 
     if (festivalTitle && Array.isArray(scheduleDays) && Array.isArray(committeeSections)) {
@@ -203,7 +203,7 @@ function mapApiToPujaData(apiData: any): PujaData | null {
             _festival: apiData._festival || apiData,
         };
     }
-    
+
     console.warn('[usePujaData] Incomplete data from API:', apiData);
     return null;
 }
@@ -232,14 +232,14 @@ export function usePujaData() {
                 const res = await fetch(`${base}/puja/current?v=${Date.now()}`, {
                     cache: 'no-store'
                 });
-                
+
                 if (!res.ok) {
                     throw new Error(`API returned ${res.status}`);
                 }
 
                 const apiJson = await res.json();
                 const mapped = mapApiToPujaData(apiJson);
-                
+
                 if (mounted && mapped) {
                     console.log('[usePujaData] Successfully synced with API');
                     setData(mapped);

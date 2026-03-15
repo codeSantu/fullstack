@@ -20,6 +20,10 @@
         "NODE_ENV"
     ],
     "tasks": {
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
         "build": {
             "dependsOn": [
                 "^build"
