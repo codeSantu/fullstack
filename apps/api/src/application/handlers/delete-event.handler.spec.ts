@@ -31,7 +31,7 @@ describe('DeleteEventHandler', () => {
         mockRepository.findById.mockResolvedValueOnce(null);
 
         const cmd = new DeleteEventCommand('event-404', 'owner-123');
-        await expect(handler.execute(cmd)).rejects.toThrowError('Event not found');
+        await expect(handler.execute(cmd)).rejects.toThrow('Event not found');
         expect(mockRepository.delete).not.toHaveBeenCalled();
     });
 
@@ -42,7 +42,7 @@ describe('DeleteEventHandler', () => {
         const cmd = new DeleteEventCommand('event-1', 'hacker-999');
 
         // Domain logic should throw the error
-        await expect(handler.execute(cmd)).rejects.toThrowError('Unauthorized: You can only modify events you created');
+        await expect(handler.execute(cmd)).rejects.toThrow('Unauthorized: You can only modify events you created');
         expect(mockRepository.delete).not.toHaveBeenCalled();
     });
 });

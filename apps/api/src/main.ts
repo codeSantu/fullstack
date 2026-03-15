@@ -22,7 +22,6 @@ async function bootstrap() {
 
     // Prefix all HTTP routes with /api BEFORE Swagger/Static Assets
     app.setGlobalPrefix('api');
-
     // Serve Local Static Assets for Virtual S3 Provider
     app.useStaticAssets(join(process.cwd(), 'uploads'), {
         prefix: '/api/uploads/',

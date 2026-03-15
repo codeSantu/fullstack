@@ -2,7 +2,7 @@
 [build]
   command = "npx turbo run build --filter=web"
   functions = "netlify/functions"
-  publish = "apps/web/.next"
+  publish = "apps\web\.next"
 
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
   ## Not needed for static site generators.

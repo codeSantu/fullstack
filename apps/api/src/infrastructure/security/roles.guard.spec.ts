@@ -29,14 +29,14 @@ describe('RolesGuard', () => {
 
     it('should block access if user has no role defined', () => {
         reflector.getAllAndOverride.mockReturnValue([UserRole.ORGANIZER]);
-        expect(() => guard.canActivate(mockContext({ id: '1' }))).toThrowError(ForbiddenException);
-        expect(() => guard.canActivate(mockContext({ id: '1' }))).toThrowError('Access denied. No valid role associated with this request.');
+        expect(() => guard.canActivate(mockContext({ id: '1' }))).toThrow(ForbiddenException);
+        expect(() => guard.canActivate(mockContext({ id: '1' }))).toThrow('Access denied. No valid role associated with this request.');
     });
 
     it('should block access if user role does not match required roles', () => {
         reflector.getAllAndOverride.mockReturnValue([UserRole.ORGANIZER]);
-        expect(() => guard.canActivate(mockContext({ id: '1', role: UserRole.USER }))).toThrowError(ForbiddenException);
-        expect(() => guard.canActivate(mockContext({ id: '1', role: UserRole.USER }))).toThrowError('Access denied. Action requires one of these roles: ORGANIZER');
+        expect(() => guard.canActivate(mockContext({ id: '1', role: UserRole.USER }))).toThrow(ForbiddenException);
+        expect(() => guard.canActivate(mockContext({ id: '1', role: UserRole.USER }))).toThrow('Access denied. Action requires one of these roles: ORGANIZER');
     });
 
     it('should allow access if user role matches one of the required roles', () => {
