@@ -27,28 +27,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
 
-      # 🔹 Upgrade npm to match package.json engines (fix EBADENGINE)
-      - name: Upgrade npm to v11+
-        run: npm install -g npm@11
+      # Upgrade npm to v11+ to match package.json engine requirement
+      - name: Upgrade npm
+        run: |
+          npm install -g npm@11
+          echo "Using npm version: $(npm --version)"
 
-      # 🔹 Install dependencies skipping optional platform-specific packages
+      # Install dependencies, skipping optional platform-specific packages
       - name: Install dependencies
-        run: npm ci --omit=optional --prefer-offline --no-audit
+        run: |
+          echo "Using npm version: $(npm --version)"
+          npm ci --omit=optional --prefer-offline --no-audit
 
       # Generate Prisma client
       - name: Generate Prisma Client
         run: npx turbo run db:generate --filter=api
 
-      # Build all packages first
+      # Build all packages
       - name: Build packages
         run: npx turbo run build
 
-      # Then run type checks
+      # Type checks
       - name: Type Check
         run: npx turbo run check
