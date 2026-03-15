@@ -1,4 +1,4 @@
-name: CI/CD Pipeline (Yarn)
+name: CI/CD Pipeline (Yarn v3)
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
       # 1️⃣ Checkout code
       - uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js 20 and cache Yarn
+      # 2️⃣ Setup Node.js 20 with Corepack enabled
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -45,14 +45,14 @@ jobs:
           corepack prepare yarn@3.6.0 --activate
           yarn --version
 
-      # 4️⃣ Clean previous outputs (optional)
-      - name: Clean Turborepo & node_modules
+      # 4️⃣ Clean previous outputs
+      - name: Clean previous builds & cache
         run: |
           rm -rf node_modules
-          yarn turbo prune --force
           yarn cache clean
+          yarn turbo prune --force
 
-      # 5️⃣ Install dependencies using Yarn v3
+      # 5️⃣ Install dependencies with Yarn v3
       - name: Install dependencies
         run: yarn install --immutable
 
@@ -60,7 +60,7 @@ jobs:
       - name: Generate Prisma Client
         run: npx turbo run db:generate --filter=api
 
-      # 7️⃣ Build all packages with Turbo
+      # 7️⃣ Build all packages
       - name: Build packages
         run: npx turbo run build
 
