@@ -77,6 +77,53 @@
                 "build:web"
             ],
             "outputs": []
-        }
+        },
+        "deploy:api": {
+            "dependsOn": [
+                "build:api"
+            ],
+            "outputs": []
+        },
+        "deploy:all": {
+            "dependsOn": [
+                "deploy:web",
+                "deploy:api"
+            ],
+            "outputs": []
+        },
+        "redeploy:all": {
+            "dependsOn": [
+                "deploy:all"
+            ],
+            "outputs": []
+        },
+        "redeploy:force": {
+            "dependsOn": [
+                "redeploy:all"
+            ],
+            "outputs": []
+        },
+        "clean": {
+            "dependsOn": [
+                "^clean"
+            ],
+            "outputs": []
+        },
+        "build:api": {
+            "dependsOn": [
+                "build"
+            ],
+            "outputs": [
+                "apps/api/dist/**"
+            ]
+        },
+        "build:shared": {
+            "dependsOn": [
+                "build"
+            ],
+            "outputs": [
+                "packages/shared/dist/**"
+            ]
+        },
     }
 }

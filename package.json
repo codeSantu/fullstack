@@ -40,25 +40,57 @@
   "turbo": {
     "$schema": "https://turbo.build/schema.json",
     "pipeline": {
+      "clean": {
+        "cache": false,
+        "outputs": []
+      },
       "build": {
         "dependsOn": [
           "^build"
         ],
         "outputs": [
           "dist/**",
-          ".next/**"
+          ".next/**",
+          "!.next/cache/**"
         ]
       },
-      "dev": {
-        "cache": false
+      "check": {
+        "dependsOn": [
+          "^check"
+        ]
       },
-      "lint": {
-        "outputs": []
-      },
-      "test": {
-        "outputs": []
+      "db:generate": {
+        "cache": true,
+        "inputs": [
+          "prisma/schema.prisma"
+        ],
+        "outputs": [
+          "node_modules/.prisma/**"
+        ]
       },
       "test:e2e": {
+        "cache": false,
+        "dependsOn": [
+          "build"
+        ],
+        "outputs": [
+          "coverage/**",
+          "playwright-report/**",
+          "test-results/**"
+        ]
+      },
+      "build:web": {
+        "dependsOn": [
+          "build"
+        ],
+        "outputs": [
+          "apps/web/out/**"
+        ]
+      },
+      "deploy:web": {
+        "dependsOn": [
+          "build:web"
+        ],
         "outputs": []
       }
     }
