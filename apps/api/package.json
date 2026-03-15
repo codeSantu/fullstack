@@ -15,7 +15,8 @@
         "db:seed": "ts-node prisma/seed.ts",
         "start:prod": "node dist/src/main.js",
         "test:e2e": "jest --config ./test/jest-e2e.json",
-        "check": "tsc --noEmit"
+        "prisma:generate": "prisma generate",
+        "check": "npm run prisma:generate && tsc --noEmit"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.1009.0",
