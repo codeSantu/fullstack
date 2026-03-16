@@ -1,10 +1,21 @@
-nixPkgs = ["nodejs_20"]
+# railway.nix
+nixPkgs = ["nodejs_20"];
 
 [phases.install]
-cmds = ["npm ci"]
+# Use Yarn v3 & install only API workspace dependencies
+cmds = [
+  "corepack enable"
+  "corepack prepare yarn@3.6.0 --activate"
+  "yarn workspaces focus api --production"
+];
 
 [phases.build]
-cmds = ["npx turbo run build --filter=api"]
+# Generate Prisma client and build API
+cmds = [
+  "yarn workspace api db:generate"
+  "npx turbo run build --filter=api"
+];
 
 [start]
+# Start the built API
 cmd = "node apps/api/dist/src/main.js"
