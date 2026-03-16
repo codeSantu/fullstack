@@ -1,4 +1,4 @@
-import { NestFactory, HttpAdapterHost } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
@@ -11,7 +11,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 /**
  * GLOBAL ERROR HANDLERS
- * Ensures Railway logs the real error instead of silent crash
  */
 process.on('uncaughtException', (error) => {
     console.error('❌ Uncaught Exception:', error);
@@ -29,17 +28,17 @@ async function bootstrap() {
     });
 
     /**
-     * TRUST PROXY (required for Railway / reverse proxies)
+     * TRUST PROXY (Railway / reverse proxy support)
      */
     app.set('trust proxy', 1);
 
     /**
-     * Use Winston as global logger
+     * USE WINSTON LOGGER
      */
     app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
     /**
-     * GLOBAL PREFIX
+     * GLOBAL API PREFIX
      */
     app.setGlobalPrefix('api');
 
@@ -58,7 +57,7 @@ async function bootstrap() {
     );
 
     /**
-     * VALIDATION PIPE
+     * GLOBAL VALIDATION
      */
     app.useGlobalPipes(
         new ValidationPipe({
@@ -73,7 +72,7 @@ async function bootstrap() {
     app.use(
         helmet({
             crossOriginResourcePolicy: { policy: 'cross-origin' },
-            contentSecurityPolicy: false, // needed for Swagger UI
+            contentSecurityPolicy: false, // required for Swagger
         }),
     );
 
@@ -88,7 +87,6 @@ async function bootstrap() {
         .build();
 
     const document = SwaggerModule.createDocument(app, swaggerConfig);
-
     SwaggerModule.setup('api/docs', app, document);
 
     /**
@@ -103,26 +101,37 @@ async function bootstrap() {
 
     app.enableCors({
         origin: (origin, callback) => {
-            if (
-                !origin ||
-                allowedOrigins.includes(origin) ||
-                origin?.endsWith('.vercel.app') ||
-                origin?.endsWith('.railway.app') ||
-                origin?.endsWith('.netlify.app')
-            ) {
-                callback(null, true);
-            } else {
-                callback(new Error(`CORS Error: Origin ${origin} not allowed`));
+            // allow curl, server-to-server requests
+            if (!origin) {
+                return callback(null, true);
             }
+
+            if (
+                allowedOrigins.includes(origin) ||
+                origin.endsWith('.vercel.app') ||
+                origin.endsWith('.railway.app') ||
+                origin.endsWith('.netlify.app')
+            ) {
+                return callback(null, true);
+            }
+
+            console.warn(`⚠️ CORS blocked origin: ${origin}`);
+            return callback(null, false);
         },
         credentials: true,
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-        allowedHeaders:
-            'Content-Type,Accept,Authorization,x-organization-id',
+        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+        allowedHeaders: [
+            'Content-Type',
+            'Accept',
+            'Authorization',
+            'x-organization-id',
+        ],
+        exposedHeaders: ['Content-Length'],
+        optionsSuccessStatus: 204,
     });
 
     /**
-     * PORT (Railway provides PORT env)
+     * PORT (Railway provides PORT)
      */
     const port = process.env.PORT || 3001;
 
@@ -132,10 +141,8 @@ async function bootstrap() {
     await app.listen(port, '0.0.0.0');
 
     logger.log(`🚀 Server running on port: ${port}`);
-    logger.log(`📚 Swagger Docs available at: /api/docs`);
+    logger.log(`🌍 API URL: http://localhost:${port}/api`);
+    logger.log(`📚 Swagger Docs: http://localhost:${port}/api/docs`);
 }
 
-/**
- * BOOTSTRAP
- */
 bootstrap();
