@@ -11,6 +11,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 /**
  * GLOBAL ERROR HANDLERS
+ * Ensures Railway logs the real error instead of silent crash
  */
 process.on('uncaughtException', (error) => {
     console.error('❌ Uncaught Exception:', error);
@@ -28,17 +29,17 @@ async function bootstrap() {
     });
 
     /**
-     * TRUST PROXY (Railway / reverse proxy support)
+     * TRUST PROXY (required for Railway / reverse proxies)
      */
     app.set('trust proxy', 1);
 
     /**
-     * USE WINSTON LOGGER
+     * Use Winston as global logger
      */
     app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
     /**
-     * GLOBAL API PREFIX
+     * GLOBAL PREFIX
      */
     app.setGlobalPrefix('api');
 
@@ -57,7 +58,7 @@ async function bootstrap() {
     );
 
     /**
-     * GLOBAL VALIDATION
+     * VALIDATION PIPE
      */
     app.useGlobalPipes(
         new ValidationPipe({
@@ -72,7 +73,7 @@ async function bootstrap() {
     app.use(
         helmet({
             crossOriginResourcePolicy: { policy: 'cross-origin' },
-            contentSecurityPolicy: false, // required for Swagger
+            contentSecurityPolicy: false, // needed for Swagger UI
         }),
     );
 
@@ -101,11 +102,12 @@ async function bootstrap() {
 
     app.enableCors({
         origin: (origin, callback) => {
-            // allow curl, server-to-server requests
+            // If there is no origin (e.g., server-to-server request, Postman)
             if (!origin) {
                 return callback(null, true);
             }
 
+            // Check if origin matches exact list or specific dynamic suffixes
             if (
                 allowedOrigins.includes(origin) ||
                 origin.endsWith('.vercel.app') ||
@@ -115,34 +117,35 @@ async function bootstrap() {
                 return callback(null, true);
             }
 
-            console.warn(`⚠️ CORS blocked origin: ${origin}`);
+            // Reject all others
+            console.warn(`Blocked by CORS: ${origin}`);
             return callback(null, false);
         },
         credentials: true,
-        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-        allowedHeaders: [
-            'Content-Type',
-            'Accept',
-            'Authorization',
-            'x-organization-id',
-        ],
-        exposedHeaders: ['Content-Length'],
-        optionsSuccessStatus: 204,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: 'Content-Type,Accept,Authorization,x-organization-id',
     });
 
     /**
-     * PORT (Railway provides PORT)
+     * PORT (Railway provides PORT env)
      */
     const port = process.env.PORT || 3001;
 
     /**
      * START SERVER
      */
-    await app.listen(port, '0.0.0.0');
+    // We capture the underlying HTTP server instance returned by listen()
+    const server = await app.listen(port, '0.0.0.0');
+
+    /**
+     * FIX FOR "TCP_OVERWINDOW" NETWORK DROPS
+     * Forces Node.js to keep connections alive slightly longer than the Railway edge proxies.
+     */
+    server.keepAliveTimeout = 65000; // 65 seconds
+    server.headersTimeout = 66000;   // 66 seconds
 
     logger.log(`🚀 Server running on port: ${port}`);
-    logger.log(`🌍 API URL: http://localhost:${port}/api`);
-    logger.log(`📚 Swagger Docs: http://localhost:${port}/api/docs`);
+    logger.log(`📚 Swagger Docs available at: /api/docs`);
 }
 
 bootstrap();
