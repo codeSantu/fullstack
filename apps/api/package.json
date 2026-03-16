@@ -3,14 +3,13 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "prebuild": "prisma generate && npm run build --workspace=@ddd/shared",
-        "build": "nest build",
+        "db:generate": "prisma generate",
+        "build": "yarn db:generate && nest build",
         "start": "nest start",
         "dev": "nest start --watch",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
         "test": "jest",
         "test:cov": "jest --coverage",
-        "db:generate": "prisma generate",
         "db:push": "prisma db push",
         "db:seed": "ts-node prisma/seed.ts",
         "start:prod": "node dist/src/main.js",
@@ -53,7 +52,7 @@
         "rxjs": "^7.8.2",
         "socket.io": "^4.8.3",
         "socket.io-client": "^4.8.3",
-        "swagger-ui-express": "^5.0.1",
+        "swagger-ui-express": "^5.2.1",
         "winston": "^3.19.0"
     },
     "devDependencies": {
