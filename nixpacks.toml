@@ -1,22 +1,18 @@
 [phases.setup]
 nixpkgsArchive = "51ad838b03a05b1de6f9f2a0fffecee64a9788ee"
-# Removed yarn-berry from this list so it doesn't drag in Node 20
 nixPkgs = ["nodejs_22", "python310", "gnumake", "gcc"]
+
+[variables]
+# This explicitly overrides Railway's auto-detected Turborepo command
+NIXPACKS_BUILD_CMD = "yarn turbo run db:generate --filter=api && yarn turbo run build --filter=api"
 
 [env]
 npm_config_build_from_source = "false"
 
 [phases.install]
-# Enable corepack before installing to natively activate Yarn Berry
 cmds = [
   "corepack enable",
   "yarn install --immutable"
-]
-
-[phases.build]
-cmds = [
-  "yarn turbo run db:generate --filter=api",
-  "yarn turbo run build --filter=api"
 ]
 
 [start]
