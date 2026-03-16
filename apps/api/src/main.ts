@@ -73,7 +73,7 @@ async function bootstrap() {
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         allowedHeaders: 'Content-Type,Accept,Authorization,x-organization-id',
     });
-
+    //
     // CRITICAL: Use the PORT provided by Railway or fallback to 3001
     const port = process.env.PORT || 3001;
 
