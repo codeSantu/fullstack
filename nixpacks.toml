@@ -1,18 +1,25 @@
-# Use Node.js 20
-nixPkgs = ["nodejs_20"]
+# nixpacks.toml - Clean setup for API build
 
+# Node version compatible with Prisma v7.5.0
+nixPkgs = ["nodejs_22_12"]
+
+# Install phase: enable Yarn, install Python & build tools for native modules
 [phases.install]
 cmds = [
-    "corepack enable",
-    "corepack prepare yarn@3.6.0 --activate",
-    "yarn install --immutable"
+  "corepack enable",
+  "corepack prepare yarn@3.6.0 --activate",
+  "nix-env -iA nixpkgs.python310",   # Required by node-gyp for native modules
+  "nix-env -iA nixpkgs.make",        # Build tool for native modules
+  "yarn install --immutable"         # Install dependencies without modifying lockfile
 ]
 
+# Build phase: generate Prisma client and build API
 [phases.build]
 cmds = [
-    "yarn turbo run db:generate --filter=api",
-    "yarn turbo run build --filter=api"
+  "yarn turbo run db:generate --filter=api",
+  "yarn turbo run build --filter=api"
 ]
 
+# Start phase: run the built API
 [start]
 cmd = "node apps/api/dist/src/main.js"
