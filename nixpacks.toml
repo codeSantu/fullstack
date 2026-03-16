@@ -1,6 +1,8 @@
 # nixpacks.toml - API build setup
 
-nixPkgs = ["nodejs_22_12"]
+[phases.setup]
+# Declare all system dependencies here
+nixPkgs = ["nodejs_22_12", "python310", "gnumake", "gcc"]
 
 [env]
 npm_config_build_from_source = "false"
@@ -9,9 +11,6 @@ npm_config_build_from_source = "false"
 cmds = [
   "corepack enable",
   "corepack prepare yarn@3.6.0 --activate",
-  "nix-env -iA nixpkgs.python310",
-  "nix-env -iA nixpkgs.make",
-  "nix-env -iA nixpkgs.gcc",
   "yarn install --immutable"
 ]
 
