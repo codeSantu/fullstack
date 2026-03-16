@@ -16,6 +16,7 @@ async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: WinstonModule.createLogger(winstonConfig)
     });
+    //lip
 
     // Switch default internal logger to Winston globally
     app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
