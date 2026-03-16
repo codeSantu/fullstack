@@ -55,7 +55,6 @@ async function bootstrap() {
         'http://localhost:3001',
         'https://jmksangha.netlify.app',
     ];
-    //change
 
     app.enableCors({
         origin: (origin, callback) => {
