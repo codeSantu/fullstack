@@ -1,4 +1,5 @@
 [build]
-  command = "yarn workspace web build"
-  functions = "netlify/functions"
-  publish = "apps/web/out"
+base = "apps/web"
+command = "yarn workspace web build"
+functions = "netlify/functions"
+publish = "apps/web/out"
