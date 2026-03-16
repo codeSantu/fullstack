@@ -95,7 +95,6 @@ async function bootstrap() {
      * CORS CONFIGURATION
      */
     const allowedOrigins = [
-        '*',
         'https://jmks.vercel.app',
         'https://jmksangha.netlify.app',
         'http://localhost:3000',
