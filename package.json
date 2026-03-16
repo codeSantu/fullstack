@@ -34,7 +34,7 @@
   "devDependencies": {
     "netlify-cli": "^24.2.0",
     "rimraf": "^5.0.0",
-    "turbo": "2.8.17",
+    "turbo": "^2.8.17",
     "typescript": "^5.9.3"
   },
   "turbo": {

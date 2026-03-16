@@ -43,8 +43,8 @@ jobs:
           corepack prepare yarn@3.6.0 --activate
           yarn --version
 
-      # 4️⃣ Cache Yarn v3 dependencies
-      - name: Cache Yarn v3 Dependencies
+      # 4️⃣ Cache Yarn dependencies
+      - name: Cache Yarn Dependencies
         uses: actions/cache@v3
         with:
           path: |
@@ -54,7 +54,7 @@ jobs:
             **/.yarn/build-state.yml
           key: yarn-v3-${{ hashFiles('**/yarn.lock') }}
 
-      # 5️⃣ Cache Turbo outputs including Prisma client
+      # 5️⃣ Cache Turbo outputs (including Prisma client)
       - name: Cache Turbo Output
         uses: actions/cache@v3
         with:
@@ -66,11 +66,11 @@ jobs:
           restore-keys: |
             turbo-
 
-      # 6️⃣ Clean previous builds
+      # 6️⃣ Clean previous builds (without deprecated --force)
       - name: Clean previous builds
         run: |
           rm -rf node_modules
-          yarn dlx turbo prune --force
+          yarn dlx turbo prune
 
       # 7️⃣ Install dependencies
       - name: Install dependencies

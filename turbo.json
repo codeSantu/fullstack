@@ -50,7 +50,8 @@
                 "prisma/schema.prisma"
             ],
             "outputs": [
-                "../../node_modules/@prisma/client/**"
+                "node_modules/.prisma/**",
+                "node_modules/@prisma/client/**"
             ]
         },
         "test:e2e": {
@@ -69,8 +70,14 @@
                 "build"
             ],
             "outputs": [
-                "apps/web/out/**"
+                ".next/**"
             ]
+        },
+        "deploy:web": {
+            "dependsOn": [
+                "build:web"
+            ],
+            "outputs": []
         },
         "deploy:api": {
             "dependsOn": [
@@ -117,6 +124,14 @@
             ],
             "outputs": [
                 "packages/shared/dist/**"
+            ]
+        },
+        "build:infrastructure": {
+            "dependsOn": [
+                "build"
+            ],
+            "outputs": [
+                "apps/infrastructure/dist/**"
             ]
         }
     }
