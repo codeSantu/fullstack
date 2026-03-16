@@ -1,14 +1,15 @@
 [phases.setup]
-# Pin to a specific, stable Nixpkgs commit to provision Node.js 22.13.1.
-# This strictly satisfies the Prisma 7.5.0 >=22.12.0 requirement while preserving the node-gyp toolchain.
 nixpkgsArchive = "51ad838b03a05b1de6f9f2a0fffecee64a9788ee"
-nixPkgs = ["nodejs_22", "yarn-berry", "python310", "gnumake", "gcc"]
+# Removed yarn-berry from this list so it doesn't drag in Node 20
+nixPkgs = ["nodejs_22", "python310", "gnumake", "gcc"]
 
 [env]
 npm_config_build_from_source = "false"
 
 [phases.install]
+# Enable corepack before installing to natively activate Yarn Berry
 cmds = [
+  "corepack enable",
   "yarn install --immutable"
 ]
 

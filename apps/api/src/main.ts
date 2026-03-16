@@ -38,7 +38,7 @@ async function bootstrap() {
         contentSecurityPolicy: false, // Often needed for Swagger UI to load in prod
     }));
 
-    // OpenAPI Documentation
+    // OpenAPI Documentation required for Swagger UI
     const config = new DocumentBuilder()
         .setTitle('DDD Enterprise API')
         .setDescription('Organizer Hub V2 REST documentation.')
