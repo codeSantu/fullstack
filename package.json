@@ -2,7 +2,7 @@
   "name": "fullstack-ddd-boilerplate",
   "private": true,
   "version": "1.0.0",
-  "packageManager": "yarn@3.6.0",
+  "packageManager": "yarn@4.13.0",
   "workspaces": [
     "apps/*",
     "packages/*",
