@@ -1,16 +1,16 @@
 # nixpacks.toml - API build setup
 
 [phases.setup]
-# Declare all system dependencies here
-nixPkgs = ["nodejs_22_12", "python310", "gnumake", "gcc"]
+# Added yarn-berry here, removed corepack from install cmds
+nixPkgs = ["nodejs_22", "yarn-berry", "python310", "gnumake", "gcc"]
 
 [env]
 npm_config_build_from_source = "false"
 
 [phases.install]
 cmds = [
-  "corepack enable",
-  "corepack prepare yarn@3.6.0 --activate",
+  # yarn-berry automatically respects your project's .yarnrc.yml 
+  # and yarn.lock, so you don't need to manually set the version here.
   "yarn install --immutable"
 ]
 
