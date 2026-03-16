@@ -1,0 +1,6 @@
+node_modules
+.turbo
+apps//.next
+apps//dist
+packages//dist
+.env
