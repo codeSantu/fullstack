@@ -43,7 +43,7 @@ jobs:
           corepack prepare yarn@3.6.0 --activate
           yarn --version
 
-      # 4️⃣ Cache Yarn dependencies
+      # 4️⃣ Cache Yarn v3 dependencies
       - name: Cache Yarn Dependencies
         uses: actions/cache@v3
         with:
@@ -54,7 +54,7 @@ jobs:
             **/.yarn/build-state.yml
           key: yarn-v3-${{ hashFiles('**/yarn.lock') }}
 
-      # 5️⃣ Cache Turbo outputs (including Prisma client)
+      # 5️⃣ Cache Turbo outputs including Prisma client
       - name: Cache Turbo Output
         uses: actions/cache@v3
         with:
@@ -66,27 +66,25 @@ jobs:
           restore-keys: |
             turbo-
 
-      # 6️⃣ Clean previous builds (without deprecated --force)
+      # 6️⃣ Clean previous builds (optional)
       - name: Clean previous builds
-        run: |
-          rm -rf node_modules
-          yarn dlx turbo prune
+        run: rm -rf node_modules
 
-      # 7️⃣ Install dependencies
+      # 7️⃣ Install dependencies (including local turbo)
       - name: Install dependencies
         run: yarn install --immutable
 
       # 8️⃣ Generate Prisma client for API
       - name: Generate Prisma Client
-        run: yarn dlx turbo run db:generate --filter=api
+        run: yarn turbo run db:generate --filter=api
 
       # 9️⃣ Build all packages
       - name: Build packages
-        run: yarn dlx turbo run build
+        run: yarn turbo run build
 
       # 🔟 Run type checks
       - name: Type Check
-        run: yarn dlx turbo run check
+        run: yarn turbo run check
 
       # 1️⃣1️⃣ Deploy frontend to Netlify
       - name: Deploy Web to Netlify
